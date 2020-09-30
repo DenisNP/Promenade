@@ -68,6 +68,18 @@ namespace Promenade
             return stringResponse;
         }
         
+        public static string MakeRequest(string url, string data, ILogger logger = null)
+        {
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
+            var response = client.PostAsync(url, new StringContent(data)).Result;
+            var bytes = response.Content.ReadAsByteArrayAsync().Result;
+
+            var stringResponse = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            logger?.LogInformation(stringResponse);
+            return stringResponse;
+        }
+        
         public static byte[] HashHMAC(string key, string message)
         {
             var encoding = new UTF8Encoding();
