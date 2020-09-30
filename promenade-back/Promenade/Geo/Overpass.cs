@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Promenade.Geo.Models;
@@ -38,9 +39,92 @@ namespace Promenade.Geo
 
             var query = ConstructQuery();
             var response = Utils.MakeRequest(_url, query);
-            var data = JsonConvert.DeserializeObject<OverpassResponse>(response, Utils.ConverterSettings);
+            var pois = new List<Poi>();
 
-            return null;
+            try
+            {
+                var data = JsonConvert.DeserializeObject<OverpassResponse>(response, Utils.ConverterSettings);
+                if (data == null) throw new IOException($"Empty or wrong result from overpass: {response}");
+
+                var i = 0;
+                while (i < data.Elements.Count)
+                {
+                    var el = data.Elements[i];
+                    if (el.Tags == null || el.Tags.Count == 0)
+                    {
+                        // node element or other empty
+                        i++;
+                        continue;
+                    }
+
+                    Poi poi = null;
+                    if (HasCoordinates(el))
+                    {
+                        // single coordinated element with tags, save it
+                        data.Elements.RemoveAt(i);
+                        poi = new Poi
+                        {
+                            Coordinates = new GeoPoint(el.Lat, el.Lon)
+                        };
+                    }
+                    else if (el.Nodes.Length > 0)
+                    {
+                        // multinode element, calculate avg coordinates and save it
+                        data.Elements.RemoveAt(i);
+                        GeoPoint lastCoordinates = null;
+                        foreach (var node in el.Nodes)
+                        {
+                            var nIdx = data.Elements.FindIndex(x => x.Type == "node" && x.Id == node);
+                            if (nIdx >= 0 && HasCoordinates(data.Elements[nIdx]))
+                            {
+                                // node found
+                                var point = new GeoPoint(data.Elements[nIdx].Lat, data.Elements[nIdx].Lon);
+                                lastCoordinates = lastCoordinates == null
+                                    ? point
+                                    : GeoUtils.MidPoint(lastCoordinates, point);
+                                
+                                // remove element from list
+                                if (nIdx < i) i--;
+                                data.Elements.RemoveAt(nIdx);
+                            }
+                        }
+
+                        // set coordinates to poi if found
+                        if (lastCoordinates != null) poi = new Poi {Coordinates = lastCoordinates};
+                    }
+                    else
+                    {
+                        // unknown element, skip
+                        i++;
+                    }
+
+                    // save poi
+                    if (poi != null)
+                    {
+                        poi.Id = el.Id.ToString();
+                        poi.Tags = el.Tags.Select(x => x).ToArray();
+                        poi.Description = ExtractName(el);
+                        pois.Add(poi);
+                    }
+                }
+
+                return pois;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<Poi>();
+            }
+        }
+
+        private bool HasCoordinates(Element el)
+        {
+            return Math.Abs(el.Lat) > 0.00001 && Math.Abs(el.Lon) > 0.00001;
+        }
+
+        private string ExtractName(Element el)
+        {
+            throw new NotImplementedException();
         }
 
         private string ConstructQuery()
