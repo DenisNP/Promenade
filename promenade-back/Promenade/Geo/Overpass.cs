@@ -62,12 +62,9 @@ namespace Promenade.Geo
                     {
                         // single coordinated element with tags, save it
                         data.Elements.RemoveAt(i);
-                        poi = new Poi
-                        {
-                            Coordinates = new GeoPoint(el.Lat, el.Lon)
-                        };
+                        poi = new Poi { Coordinates = new GeoPoint(el.Lat, el.Lon) };
                     }
-                    else if (el.Nodes.Length > 0)
+                    else if (el.Nodes != null && el.Nodes.Length > 0)
                     {
                         // multinode element, calculate avg coordinates and save it
                         data.Elements.RemoveAt(i);
@@ -90,7 +87,7 @@ namespace Promenade.Geo
                         }
 
                         // set coordinates to poi if found
-                        if (lastCoordinates != null) poi = new Poi {Coordinates = lastCoordinates};
+                        if (lastCoordinates != null) poi = new Poi { Coordinates = lastCoordinates };
                     }
                     else
                     {
