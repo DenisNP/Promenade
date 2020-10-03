@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Promenade.Models;
+using Promenade.Models.Abstract;
 using Promenade.Services.Abstract;
 
 namespace Promenade.Services

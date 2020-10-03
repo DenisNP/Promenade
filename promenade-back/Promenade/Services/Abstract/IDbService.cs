@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Promenade.Models;
+using Promenade.Models.Abstract;
 
 namespace Promenade.Services.Abstract
 {

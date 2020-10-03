@@ -1,4 +1,4 @@
-﻿namespace Promenade.Models
+﻿namespace Promenade.Models.Abstract
 {
     public interface IIdentity
     {
