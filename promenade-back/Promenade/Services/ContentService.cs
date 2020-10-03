@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -27,6 +28,22 @@ namespace Promenade.Services
             _logger.LogInformation(
                 $"Categories loaded: {_categories.Length}; poi: {_categories.Select(c => c.Tags.Length).Sum()}"
             );
+        }
+
+        public KeyValuePair<string, string>[] GetTagsForCategories(int[] categoryIds)
+        {
+            return _categories
+                .Where(c => categoryIds.Contains(c.Id))
+                .SelectMany(c => c.Tags)
+                .Select(t => t.ToKvPair())
+                .ToArray();
+        }
+
+        public CategoryForUser[] GenerateInitial()
+        {
+            return _categories
+                .Select(c => new CategoryForUser(c, c.DefaultEnabled))
+                .ToArray();
         }
     }
 }
