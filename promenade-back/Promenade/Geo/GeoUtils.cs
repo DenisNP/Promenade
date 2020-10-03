@@ -62,5 +62,16 @@ namespace Promenade.Geo
                 Lng = newLng * RadToDegFactor
             };
         }
+        
+        public static double Distance(GeoPoint p1, GeoPoint p2)
+        {
+            var p1Lat = p1.Lat * DegToRadFactor;
+            var p2Lat = p2.Lat * DegToRadFactor;
+            var diff = (p2.Lng - p1.Lng) * DegToRadFactor;
+            var d3 = Math.Pow(Math.Sin((p2Lat - p1Lat) / 2.0), 2.0) 
+                     + Math.Cos(p1Lat) * Math.Cos(p2Lat) * Math.Pow(Math.Sin(diff / 2.0), 2.0);
+
+            return EarthRadiusKm * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
+        }
     }
 }

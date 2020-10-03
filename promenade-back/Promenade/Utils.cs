@@ -19,17 +19,6 @@ namespace Promenade
                 NamingStrategy = new CamelCaseNamingStrategy()
             }
         };
-        
-        public static long Now()
-        {
-            return DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        }
-
-        public static long ToUnixTimeMs(this DateTime dateTime)
-        {
-            var span = dateTime - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return (long)span.TotalMilliseconds;
-        }
 
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> list)  
         {
@@ -107,15 +96,33 @@ namespace Promenade
             return s.Length <= len ? s : (s.Substring(0, len) + postfix);
         }
 
-        public static int NormalDow(this DateTimeOffset date)
+        public static TSource MinBy<TSource, TKey>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TKey> selector,
+            IComparer<TKey> comparer
+        )
         {
-            var dow = (int) date.DayOfWeek;
-            return dow == 0 ? 7 : dow;
-        }
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+            comparer ??= Comparer<TKey>.Default;
 
-        public static bool IsSameDayAs(this DateTimeOffset offset, DateTimeOffset second)
-        {
-            return offset.Day == second.Day && offset.Month == second.Month && offset.Year == second.Year;
+            using var sourceIterator = source.GetEnumerator();
+            if (!sourceIterator.MoveNext())
+                throw new InvalidOperationException("Sequence contains no elements");
+            
+            var min = sourceIterator.Current;
+            var minKey = selector(min);
+            while (sourceIterator.MoveNext())
+            {
+                var candidate = sourceIterator.Current;
+                var candidateProjected = selector(candidate);
+                if (comparer.Compare(candidateProjected, minKey) < 0)
+                {
+                    min = candidate;
+                    minKey = candidateProjected;
+                }
+            }
+            return min;
         }
     }
 }
