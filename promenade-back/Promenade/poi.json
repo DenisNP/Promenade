@@ -1,0 +1,422 @@
+[
+  {
+    "id": 1,
+    "name": "архитектура",
+    "icon": "landmark",
+    "tags": [
+      {
+        "key": "barrier",
+        "value": "city_wall",
+        "name": "городская стена"
+      },
+      {
+        "key": "barrier",
+        "value": "ditch",
+        "name": "ров"
+      },
+      {
+        "key": "building",
+        "value": "temple",
+        "name": "замок"
+      },
+      {
+        "key": "building",
+        "value": "conservatory",
+        "name": "оранжерея"
+      },
+      {
+        "key": "building",
+        "value": "greenhouse",
+        "name": "теплица"
+      },
+      {
+        "key": "building",
+        "value": "gatehouse",
+        "name": "арка"
+      },
+      {
+        "key": "historic",
+        "value": "aqueduct",
+        "name": "акведук"
+      },
+      {
+        "key": "historic",
+        "value": "building",
+        "name": "историческое здание"
+      },
+      {
+        "key": "historic",
+        "value": "castle",
+        "name": "замок"
+      },
+      {
+        "key": "historic",
+        "value": "castle_wall",
+        "name": "стена замка"
+      },
+      {
+        "key": "historic",
+        "value": "city_gate",
+        "name": "городские ворота"
+      },
+      {
+        "key": "historic",
+        "value": "manor",
+        "name": "усадьба"
+      },
+      {
+        "key": "historic",
+        "value": "tomb",
+        "name": "гробница"
+      }
+    ],
+    "defaultEnabled": false
+  },
+  {
+    "id": 2,
+    "name": "башни",
+    "icon": "chess-rook",
+    "tags": [
+      {
+        "key": "building",
+        "value": "transformer_tower",
+        "name": "трансформаторная вышка"
+      },
+      {
+        "key": "building",
+        "value": "water_tower",
+        "name": "водонапорная башня"
+      },
+      {
+        "key": "historic",
+        "value": "tower",
+        "name": "башня"
+      }
+    ],
+    "defaultEnabled": true
+  },
+  {
+    "id": 3,
+    "name": "водные объекты",
+    "icon": "faucet",
+    "tags": [
+      {
+        "key": "amenity",
+        "value": "fountain",
+        "name": "фонтан"
+      },
+      {
+        "key": "emergency",
+        "value": "water_tank",
+        "name": "пожарный водоём"
+      },
+      {
+        "key": "emergency",
+        "value": "drinking_water",
+        "name": "питьевая вода"
+      }
+    ],
+    "defaultEnabled": false
+  },
+  {
+    "id": 4,
+    "name": "военная история",
+    "icon": "fighter-jet",
+    "tags": [
+      {
+        "key": "historic",
+        "value": "aircraft",
+        "name": "самолет"
+      },
+      {
+        "key": "historic",
+        "value": "battlefield",
+        "name": "место сражения"
+      },
+      {
+        "key": "historic",
+        "value": "bomb_crater",
+        "name": "кратер от бомбы"
+      },
+      {
+        "key": "historic",
+        "value": "boundary_stone",
+        "name": "пограничный камень"
+      },
+      {
+        "key": "historic",
+        "value": "cannon",
+        "name": "пушка"
+      },
+      {
+        "key": "historic",
+        "value": "fort",
+        "name": "форт"
+      },
+      {
+        "key": "historic",
+        "value": "memorial",
+        "name": "мемориал"
+      },
+      {
+        "key": "historic",
+        "value": "ship",
+        "name": "корабль"
+      },
+      {
+        "key": "historic",
+        "value": "tank",
+        "name": "танк"
+      }
+    ],
+    "defaultEnabled": true
+  },
+  {
+    "id": 5,
+    "name": "городские удобства",
+    "icon": "street-view",
+    "tags": [
+      {
+        "key": "amenity",
+        "value": "bench",
+        "name": "скамейка"
+      },
+      {
+        "key": "amenity",
+        "value": "drinking_water",
+        "name": "источник воды"
+      },
+      {
+        "key": "amenity",
+        "value": "clock",
+        "name": "наружные часы"
+      },
+      {
+        "key": "amenity",
+        "value": "shelter",
+        "name": "навес от дождя"
+      },
+      {
+        "key": "highway",
+        "value": "traffic_mirror",
+        "name": "зеркало"
+      }
+    ],
+    "defaultEnabled": false
+  },
+  {
+    "id": 6,
+    "name": "необычные точки",
+    "icon": "search-location",
+    "tags": [
+      {
+        "key": "aeroway",
+        "value": "windsock",
+        "name": "флюгер"
+      },
+      {
+        "key": "amenity",
+        "value": "public_bookcase",
+        "name": "обмен книгами"
+      },
+      {
+        "key": "amenity",
+        "value": "hunting_stand",
+        "name": "охотничья станция"
+      },
+      {
+        "key": "building",
+        "value": "bunker",
+        "name": "бункер"
+      },
+      {
+        "key": "building",
+        "value": "tree_house",
+        "name": "домик на дереве"
+      },
+      {
+        "key": "geological",
+        "value": "palaeontological_site",
+        "name": "раскопки"
+      },
+      {
+        "key": "historic",
+        "value": "archaeological_site",
+        "name": "археологические раскопки"
+      },
+      {
+        "key": "historic",
+        "value": "gallows",
+        "name": "виселицы"
+      },
+      {
+        "key": "historic",
+        "value": "highwater_mark",
+        "name": "водомерная отметка"
+      },
+      {
+        "key": "historic",
+        "value": "locomotive",
+        "name": "локомотив"
+      },
+      {
+        "key": "historic",
+        "value": "milestone",
+        "name": "верстовой камень"
+      },
+      {
+        "key": "historic",
+        "value": "pillory",
+        "name": "место казни"
+      },
+      {
+        "key": "historic",
+        "value": "railway_car",
+        "name": "вагон"
+      }
+    ],
+    "defaultEnabled": true
+  },
+  {
+    "id": 7,
+    "name": "памятники",
+    "icon": "monument",
+    "tags": [
+      {
+        "key": "historic",
+        "value": "monument",
+        "name": "монумент"
+      },
+      {
+        "key": "historic",
+        "value": "stone",
+        "name": "камень"
+      }
+    ],
+    "defaultEnabled": false
+  },
+  {
+    "id": 8,
+    "name": "природные объекты",
+    "icon": "tree",
+    "tags": [
+      {
+        "key": "barrier",
+        "value": "debris",
+        "name": "осыпь"
+      },
+      {
+        "key": "barrier",
+        "value": "log",
+        "name": "бревно"
+      },
+      {
+        "key": "geological",
+        "value": "outcrop",
+        "name": "обнажение породы"
+      },
+      {
+        "key": "ford",
+        "value": "yes",
+        "name": "брод"
+      }
+    ],
+    "defaultEnabled": true
+  },
+  {
+    "id": 9,
+    "name": "религия",
+    "icon": "mosque",
+    "tags": [
+      {
+        "key": "amenity",
+        "value": "monastery",
+        "name": "монастырь"
+      },
+      {
+        "key": "amenity",
+        "value": "place_of_worship",
+        "name": "святое место"
+      },
+      {
+        "key": "building",
+        "value": "cathedral",
+        "name": "собор"
+      },
+      {
+        "key": "building",
+        "value": "church",
+        "name": "церковь"
+      },
+      {
+        "key": "building",
+        "value": "mosque",
+        "name": "мечеть"
+      },
+      {
+        "key": "building",
+        "value": "religious",
+        "name": "религиозное строение"
+      },
+      {
+        "key": "building",
+        "value": "shrine",
+        "name": "святыня"
+      },
+      {
+        "key": "building",
+        "value": "synagogue",
+        "name": "синагога"
+      },
+      {
+        "key": "historic",
+        "value": "church",
+        "name": "церковь"
+      },
+      {
+        "key": "historic",
+        "value": "monastery",
+        "name": "монастырь"
+      },
+      {
+        "key": "historic",
+        "value": "rune_stone",
+        "name": "рунический камень"
+      },
+      {
+        "key": "historic",
+        "value": "wayside_cross",
+        "name": "крест"
+      },
+      {
+        "key": "historic",
+        "value": "wayside_shrine",
+        "name": "алтарь"
+      }
+    ],
+    "defaultEnabled": false
+  },
+  {
+    "id": 10,
+    "name": "руины",
+    "icon": "house-damage",
+    "tags": [
+      {
+        "key": "building",
+        "value": "ruins",
+        "name": "руины"
+      },
+      {
+        "key": "historic",
+        "value": "ruins",
+        "name": "руины"
+      },
+      {
+        "key": "historic",
+        "value": "wreck",
+        "name": "кораблекрушение"
+      }
+    ],
+    "defaultEnabled": true
+  }
+]

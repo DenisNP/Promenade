@@ -16,11 +16,12 @@ namespace Promenade
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
 
             services.AddSingleton<ConcurrencyService>();
+            services.AddSingleton<ContentService>();
             services.AddSingleton<IDbService, MongoService>();
             services.AddSingleton<ISocialService, VkService>();
         }
 
-        public void Configure(IApplicationBuilder app, IDbService dbService)
+        public void Configure(IApplicationBuilder app, IDbService dbService, ContentService contentService)
         {
             app.UseRouting();
             app.UseFileServer();
@@ -32,6 +33,8 @@ namespace Promenade
                 if (type == typeof(User)) return "users";
                 throw new ArgumentOutOfRangeException(nameof(type), $"No collection for type: {type.FullName}");
             });
+            
+            contentService.Init();
         }
     }
 }
