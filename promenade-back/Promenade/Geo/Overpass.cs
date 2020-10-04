@@ -66,7 +66,7 @@ namespace Promenade.Geo
                     }
                     else if (el.Nodes != null && el.Nodes.Length > 0)
                     {
-                        // multinode element, calculate avg coordinates and save it
+                        // multinode element, calculate closest coordinates and save it
                         data.Elements.RemoveAt(i);
                         var nodeCoordinates = new List<GeoPoint>();
                         foreach (var node in el.Nodes)
