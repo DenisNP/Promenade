@@ -14,6 +14,7 @@ namespace Promenade
         {
             services.AddControllers();
             services.Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; });
+            services.AddMemoryCache();
 
             services.AddSingleton<ConcurrencyService>();
             services.AddSingleton<ContentService>();

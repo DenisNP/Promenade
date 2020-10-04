@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Promenade.Models;
 using Promenade.Models.Web.Request;
 using Promenade.Models.Web.Response;
 using Promenade.Services;
@@ -18,16 +19,19 @@ namespace Promenade.Controllers
         private readonly ISocialService _socialService;
         private readonly ConcurrencyService _concurrencyService;
         private readonly ILogger<MainController> _logger;
+        private readonly GeoService _geoService;
 
         public MainController(
             ISocialService socialService,
             ConcurrencyService concurrencyService,
-            ILogger<MainController> logger
+            ILogger<MainController> logger,
+            GeoService geoService
         )
         {
             _socialService = socialService;
             _concurrencyService = concurrencyService;
             _logger = logger;
+            _geoService = geoService;
         }
         
         [HttpGet("/test")]
@@ -38,6 +42,36 @@ namespace Promenade.Controllers
                 ContentType = "text/html",
                 Content = "<h1>It works!</h1>"
             };
+        }
+
+        [HttpPost("/init")]
+        public Task Init()
+        {
+            return HandleRequest<BaseRequest, State>(r => _geoService.GetState(r.UserId));
+        }
+
+        [HttpPost("/find")]
+        public Task Find()
+        {
+            return HandleRequest<FindRequest, State>(r => _geoService.Find(r.UserId, r.Lat, r.Lng, r.RangeId));
+        }
+
+        [HttpPost("/move")]
+        public Task Move()
+        {
+            return HandleRequest<CoordinatesRequest, State>(r => _geoService.Move(r.UserId, r.Lat, r.Lng));
+        }
+        
+        [HttpPost("/stop")]
+        public Task Stop()
+        {
+            return HandleRequest<BaseRequest, State>(r => _geoService.Stop(r.UserId));
+        }
+
+        [HttpPost("/toggle")]
+        public Task Toggle()
+        {
+            return HandleRequest<CategoryIdRequest, State>(r => _geoService.ToggleCategory(r.UserId, r.CategoryId));
         }
 
         private Task HandleRequest<TRequest, TResponse>(Func<TRequest, TResponse> handler, bool limitRatio = false) where TRequest : BaseRequest
