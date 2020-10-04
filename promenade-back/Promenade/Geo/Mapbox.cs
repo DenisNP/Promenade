@@ -24,7 +24,7 @@ namespace Promenade.Geo
         {
             if (string.IsNullOrEmpty(_token)) throw new ArgumentException("No Mapbox token");
 
-            var coords = Uri.EscapeDataString($"{from.AsString()};{to.AsString()}");
+            var coords = Uri.EscapeDataString($"{from.AsString(',')};{to.AsString(',')}");
             var fullUrl = $"{_url}walking/{coords}?alternatives=false&geometries=geojson&steps=false&access_token={_token}";
 
             var response = Utils.GetRequest(fullUrl, _logger);

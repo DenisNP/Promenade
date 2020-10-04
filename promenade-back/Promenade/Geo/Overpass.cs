@@ -68,7 +68,7 @@ namespace Promenade.Geo
                     {
                         // multinode element, calculate avg coordinates and save it
                         data.Elements.RemoveAt(i);
-                        GeoPoint lastCoordinates = null;
+                        var nodeCoordinates = new List<GeoPoint>();
                         foreach (var node in el.Nodes)
                         {
                             var nIdx = data.Elements.FindIndex(x => x.Type == "node" && x.Id == node);
@@ -76,9 +76,7 @@ namespace Promenade.Geo
                             {
                                 // node found
                                 var point = new GeoPoint(data.Elements[nIdx].Lat, data.Elements[nIdx].Lon);
-                                lastCoordinates = lastCoordinates == null
-                                    ? point
-                                    : GeoUtils.MidPoint(lastCoordinates, point);
+                                nodeCoordinates.Add(point);
                                 
                                 // remove element from list
                                 if (nIdx < i) i--;
@@ -87,7 +85,12 @@ namespace Promenade.Geo
                         }
 
                         // set coordinates to poi if found
-                        if (lastCoordinates != null) poi = new Poi { Coordinates = lastCoordinates };
+                        if (nodeCoordinates.Count > 0)
+                        {
+                            var center = GeoUtils.MidPoint(boundsTopLeft, boundsBottomRight);
+                            var closest = nodeCoordinates.MinBy(n => GeoUtils.Distance(n, center));
+                            poi = new Poi { Coordinates = closest };
+                        }
                     }
                     else
                     {

@@ -111,7 +111,7 @@ namespace Promenade
         public static TSource MinBy<TSource, TKey>(
             this IEnumerable<TSource> source,
             Func<TSource, TKey> selector,
-            IComparer<TKey> comparer
+            IComparer<TKey> comparer = null
         )
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
