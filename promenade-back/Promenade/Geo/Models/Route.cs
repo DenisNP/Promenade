@@ -1,6 +1,4 @@
-﻿using Promenade.Geo.Models;
-
-namespace Promenade.Models
+﻿namespace Promenade.Geo.Models
 {
     public class Route
     {

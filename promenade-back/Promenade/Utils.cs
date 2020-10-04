@@ -39,7 +39,7 @@ namespace Promenade
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
         
-        public static string MakeRequest(string url, Dictionary<string, string> data, ILogger logger = null)
+        public static string PostRequest(string url, Dictionary<string, string> data, ILogger logger = null)
         {
             var kvList = new List<KeyValuePair<string, string>>();
             foreach (var (key, value) in data)
@@ -57,11 +57,23 @@ namespace Promenade
             return stringResponse;
         }
         
-        public static string MakeRequest(string url, string data, ILogger logger = null)
+        public static string PostRequest(string url, string data, ILogger logger = null)
         {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
             var response = client.PostAsync(url, new StringContent(data)).Result;
+            var bytes = response.Content.ReadAsByteArrayAsync().Result;
+
+            var stringResponse = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            logger?.LogInformation(stringResponse);
+            return stringResponse;
+        }
+        
+        public static string GetRequest(string url, ILogger logger = null)
+        {
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
+            var response = client.GetAsync(url).Result;
             var bytes = response.Content.ReadAsByteArrayAsync().Result;
 
             var stringResponse = Encoding.UTF8.GetString(bytes, 0, bytes.Length);

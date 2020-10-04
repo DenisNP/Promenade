@@ -57,7 +57,7 @@ namespace Promenade.Services
         private string MakeVkRequest(string method, Dictionary<string, string> data)
         {
             var address = $"{VkApiAddress}/method/{method}?v={VkApiVersion}&access_token={_vkApiKey}";
-            return Utils.MakeRequest(address, data, _logger);
+            return Utils.PostRequest(address, data, _logger);
         }
     }
 }

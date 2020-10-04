@@ -38,7 +38,7 @@ namespace Promenade.Geo
             _boundsBottomRight = boundsBottomRight;
 
             var query = ConstructQuery();
-            var response = Utils.MakeRequest(_url, query);
+            var response = Utils.PostRequest(_url, query);
             var pois = new List<Poi>();
 
             try
