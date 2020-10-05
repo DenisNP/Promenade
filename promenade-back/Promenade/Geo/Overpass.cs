@@ -12,6 +12,7 @@ namespace Promenade.Geo
         public const ElementType AllTypes = ElementType.Node | ElementType.Relation | ElementType.Way;
         private const int DefaultTimeout = 25;
         private const string DefaultUrl = "http://overpass-api.de/api/interpreter";
+        private readonly string[] _nameTagsPriority = {"name", "name:ru", "title", "description", "subject" };
 
         private string _url;
         private readonly int _timeout;
@@ -124,13 +125,27 @@ namespace Promenade.Geo
 
         private string ExtractName(Element el)
         {
-            throw new NotImplementedException();
+            foreach (var tag in _nameTagsPriority)
+            {
+                if (el.Tags.ContainsKey(tag)) return el.Tags[tag];
+            }
+
+            return "";
         }
 
         private string ConstructQuery()
         {
+            var boundsLower = new GeoPoint(
+                Math.Min(_boundsTopLeft.Lat, _boundsBottomRight.Lat),
+                Math.Min(_boundsTopLeft.Lng, _boundsBottomRight.Lng)
+            );
+            var boundsHigher = new GeoPoint(
+                Math.Max(_boundsTopLeft.Lat, _boundsBottomRight.Lat),
+                Math.Max(_boundsTopLeft.Lng, _boundsBottomRight.Lng)
+            );
+            
             var q = $"[out:json][timeout:{_timeout}];(";
-            q += string.Join("", _query.Select(x => x.Construct(_boundsTopLeft, _boundsBottomRight)));
+            q += string.Join("", _query.Select(x => x.Construct(boundsLower, boundsHigher)));
             q += ");out body;>;out skel qt;";
             return q;
         }
@@ -163,6 +178,8 @@ namespace Promenade.Geo
     {
         public string Id { get; set; }
         public string Description { get; set; }
+        public int CategoryId { get; set; }
+        [JsonIgnore]
         public KeyValuePair<string, string>[] Tags { get; set; }
         public GeoPoint Coordinates { get; set; }
     }
@@ -193,9 +210,9 @@ namespace Promenade.Geo
             return $"[{string.Join("][", _tags.Select(t => $"{t.Key}={t.Value}"))}]";
         }
 
-        public string Construct(GeoPoint boundsTopLeft, GeoPoint boundsBottomRight)
+        public string Construct(GeoPoint boundsLower, GeoPoint boundsHigher)
         {
-            var bounds = $"({boundsTopLeft.AsString(',')},{boundsBottomRight.AsString(',')})";
+            var bounds = $"({boundsLower.AsString(',')},{boundsHigher.AsString(',')})";
             var q = "";
 
             if ((_elementType & ElementType.Node) > 0) q += $"node{TagsToString()}{bounds};";

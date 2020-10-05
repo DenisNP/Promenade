@@ -42,6 +42,10 @@ namespace Promenade.Services
                 };
                 _dbService.UpdateAsync(user);
             }
+            else
+            {
+                
+            }
 
             return user;
         }
@@ -108,6 +112,8 @@ namespace Promenade.Services
                 
                 state.Poi = poi;
                 state.Route = route;
+
+                _contentService.FillEmptyData(state.Poi);
             }
 
             SetIsNear(state);

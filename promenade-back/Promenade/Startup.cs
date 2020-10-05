@@ -18,6 +18,7 @@ namespace Promenade
 
             services.AddSingleton<ConcurrencyService>();
             services.AddSingleton<ContentService>();
+            services.AddSingleton<GeoService>();
             services.AddSingleton<IDbService, MongoService>();
             services.AddSingleton<ISocialService, VkService>();
         }

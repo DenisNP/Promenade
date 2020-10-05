@@ -74,7 +74,7 @@ namespace Promenade.Geo
         private class MapboxGeometry
         {
             public string Type { get; set; }
-            public int[][] Coordinates { get; set; }
+            public double[][] Coordinates { get; set; }
         }
     }
 }

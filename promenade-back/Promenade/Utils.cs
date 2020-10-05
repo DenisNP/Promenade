@@ -107,6 +107,11 @@ namespace Promenade
         {
             return s.Length <= len ? s : (s.Substring(0, len) + postfix);
         }
+        
+        public static string UppercaseFirst(this string s)
+        {
+            return string.IsNullOrEmpty(s) || s.Length == 1 ? s : char.ToUpper(s[0]) + s.Substring(1);
+        }
 
         public static TSource MinBy<TSource, TKey>(
             this IEnumerable<TSource> source,

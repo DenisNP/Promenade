@@ -131,7 +131,7 @@ namespace Promenade.Controllers
             catch (Exception e)
             {
 #if DEBUG
-                throw;
+                throw e;
 #endif
                 _logger.LogWarning(e.Message);
                 _logger.LogWarning(e.StackTrace);

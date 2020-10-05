@@ -155,11 +155,6 @@
       },
       {
         "key": "historic",
-        "value": "memorial",
-        "name": "мемориал"
-      },
-      {
-        "key": "historic",
         "value": "ship",
         "name": "корабль"
       },
@@ -286,6 +281,11 @@
         "key": "historic",
         "value": "monument",
         "name": "монумент"
+      },
+      {
+        "key": "historic",
+        "value": "memorial",
+        "name": "мемориал"
       },
       {
         "key": "historic",
