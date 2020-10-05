@@ -54,7 +54,7 @@ namespace Promenade.Services
             poi.CategoryId = catId;
 
             if (catId >= 0 && string.IsNullOrEmpty(poi.Description))
-                poi.Description = _categories[catId].Name.UppercaseFirst();
+                poi.Description = _categories[catId].Placeholder;
         }
 
         private int GetCategoryId(Poi poi)

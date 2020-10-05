@@ -4,6 +4,7 @@ namespace Promenade.Models
 {
     public class Category : CategoryMeta
     {
+        public string Placeholder { get; set; }
         public bool DefaultEnabled { get; set; }
         public TagData[] Tags { get; set; }
     }
