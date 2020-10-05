@@ -179,7 +179,20 @@ namespace Promenade.Services
         
         public State ToggleCategory(string userId, int categoryId)
         {
-            throw new NotImplementedException();
+            var state = GetState(userId);
+            var category = state.User.Categories.FirstOrDefault(c => c.Id == categoryId);
+            
+            if (category == null) throw new ArgumentOutOfRangeException(nameof(categoryId));
+            
+            // cant disable the only enabled category
+            if (state.User.Categories.Count(c => c.Enabled) == 1) return state;
+            
+            // toggle category and save
+            category.Enabled = !category.Enabled;
+            _dbService.UpdateAsync(state.User);
+            SaveState(state);
+
+            return state;
         }
 
         private void SetIsNear(State state)
