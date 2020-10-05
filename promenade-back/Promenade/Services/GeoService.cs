@@ -17,6 +17,7 @@ namespace Promenade.Services
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
         private const double NearDistance = 0.05;
+        private const double CompareTolerance = 0.00001;
         
         private readonly IDbService _dbService;
         private readonly ContentService _contentService;
@@ -133,7 +134,24 @@ namespace Promenade.Services
         
         public State Move(string userId, double lat, double lng)
         {
-            throw new NotImplementedException();
+            var state = GetState(userId);
+            var changed = state.Coordinates == null
+                          || Math.Abs(state.Coordinates.Lat - lat) > CompareTolerance
+                          || Math.Abs(state.Coordinates.Lng - lng) > CompareTolerance;
+            
+            state.Coordinates = new GeoPoint(lat, lng);
+
+            if (state.Poi != null && changed)
+            {
+                var mapbox = new Mapbox();
+                var route = mapbox.Walk(state.Coordinates, state.Poi.Coordinates);
+
+                state.Route = route;
+            }
+            
+            SetIsNear(state);
+            SaveState(state);
+            return state;
         }
         
         public State Stop(string userId, State state = null, bool disableSave = false)
