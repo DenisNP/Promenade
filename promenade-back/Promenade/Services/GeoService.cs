@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Promenade.Geo;
@@ -10,6 +11,13 @@ namespace Promenade.Services
 {
     public class GeoService
     {
+        private const int SavedToRawRatio = 10;
+        private const int VisitedToSkipRatio = 10;
+        private readonly double[] _rangeDistances = {0.1, 0.67, 1, 2};
+        private const double RadiusToBoundRatio = 1.2;
+        private const double FurtherToCloserRatio = 2.0;
+        private const double NearDistance = 0.05;
+        
         private readonly IDbService _dbService;
         private readonly ContentService _contentService;
         private readonly IMemoryCache _memoryCache;
@@ -57,7 +65,10 @@ namespace Promenade.Services
         public State Find(string userId, double lat, double lng, int rangeId)
         {
             var state = GetState(userId);
-            if (state.Poi != null) Stop(userId);
+            if (state.Poi != null) Stop(userId, state, true);
+            
+            // set coordinates
+            state.Coordinates = new GeoPoint(lat, lng);
             
             // create overpass object and add clauses
             var overpass = new Overpass();
@@ -73,21 +84,51 @@ namespace Promenade.Services
             
             // generate bounding box
             var center = new GeoPoint(lat, lng);
-            var distance = rangeId switch
-            {
-                0 => 0.3,
-                1 => 0.67,
-                2 => 1,
-                3 => 2,
-                _ => throw new ArgumentOutOfRangeException(nameof(rangeId), "RangeId should be from 0 to 3")
-            };
-            var topLeft = GeoUtils.FindPointAtDistanceFrom(center, -Math.PI / 4, distance);
-            var bottomRight = GeoUtils.FindPointAtDistanceFrom(center, 3 * Math.PI / 4, distance);
+            if (rangeId < 0 || rangeId > _rangeDistances.Length - 1)
+                throw new ArgumentOutOfRangeException(nameof(rangeId), $"RangeId should be from 0 to {_rangeDistances.Length - 1}");
+
+            var distance = _rangeDistances[rangeId];
+            var topLeft = GeoUtils.FindPointAtDistanceFrom(center, -Math.PI / 4, distance * RadiusToBoundRatio);
+            var bottomRight = GeoUtils.FindPointAtDistanceFrom(center, 3 * Math.PI / 4, distance * RadiusToBoundRatio);
             
             // get points
             var pois = overpass.Execute(topLeft, bottomRight);
-            
-            throw new NotImplementedException();
+            var poi = ChoosePoi(center, distance, pois, state.User);
+
+            if (poi == null)
+            {
+                state.Poi = null;
+                state.Route = null;
+            }
+            else
+            {
+                var mapbox = new Mapbox();
+                var route = mapbox.Walk(center, poi.Coordinates);
+                
+                state.Poi = poi;
+                state.Route = route;
+            }
+
+            SetIsNear(state);
+            SaveState(state);
+            return state;
+        }
+
+        private Poi ChoosePoi(GeoPoint center, double distance, List<Poi> pois, User user)
+        {
+            if (pois.Count == 0) return null;
+            double GetThreshold(GeoPoint p, string poiId)
+            {
+                var actualDist = GeoUtils.Distance(p, center);
+                var diff = actualDist - distance;
+                var coeff = diff > 0 ? FurtherToCloserRatio : 1.0;
+                var rawValue = coeff * Math.Abs(diff);
+                var savedValue = user.PoiSaved.ContainsKey(poiId) ? user.PoiSaved[poiId] : 0;
+
+                return rawValue + SavedToRawRatio * savedValue;
+            }
+
+            return pois.MinBy(p => GetThreshold(p.Coordinates, p.Id));
         }
         
         public State Move(string userId, double lat, double lng)
@@ -95,14 +136,49 @@ namespace Promenade.Services
             throw new NotImplementedException();
         }
         
-        public State Stop(string userId)
+        public State Stop(string userId, State state = null, bool disableSave = false)
         {
-            throw new NotImplementedException();
+            state ??= GetState(userId);
+            if (state.Poi != null)
+            {
+                var addValue = state.IsNearPoi ? VisitedToSkipRatio : 1;
+                if (!state.User.PoiSaved.ContainsKey(state.Poi.Id)) state.User.PoiSaved[state.Poi.Id] = 0;
+                state.User.PoiSaved[state.Poi.Id] += addValue;
+                
+                // update db
+                _dbService.UpdateAsync(state.User);
+                
+                // clear point
+                state.Poi = null;
+                state.Route = null;
+                state.IsNearPoi = false;
+                
+                if (!disableSave) SaveState(state);
+            }
+                
+            return state;
         }
         
         public State ToggleCategory(string userId, int categoryId)
         {
             throw new NotImplementedException();
+        }
+
+        private void SetIsNear(State state)
+        {
+            if (state.Poi == null)
+            {
+                state.IsNearPoi = false;
+                return;
+            }
+            
+            var dist = GeoUtils.Distance(state.Poi.Coordinates, state.Coordinates);
+            state.IsNearPoi = dist <= NearDistance;
+        }
+
+        private void SaveState(State state)
+        {
+            _memoryCache.Set(state.User.Id, state, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
         }
     }
 }

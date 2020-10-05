@@ -13,7 +13,7 @@ namespace Promenade.Geo
         private string _url;
         private ILogger _logger;
 
-        public Mapbox(ILogger logger, string url = DefaultUrl)
+        public Mapbox(ILogger logger = null, string url = DefaultUrl)
         {
             _token = Environment.GetEnvironmentVariable("MAPBOX_TOKEN");
             _url = url;
