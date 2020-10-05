@@ -50,14 +50,14 @@ namespace Promenade.Services
 
         public void FillEmptyData(Poi poi)
         {
-            var catId = GetCategoryId(poi);
+            var catId = GetCategoryId(poi, out var tagName);
             poi.CategoryId = catId;
 
             if (catId >= 0 && string.IsNullOrEmpty(poi.Description))
-                poi.Description = _categories[catId].Placeholder;
+                poi.Description = tagName;
         }
 
-        private int GetCategoryId(Poi poi)
+        private int GetCategoryId(Poi poi, out string tagName)
         {
             foreach (var category in _categories.Values)
             {
@@ -65,11 +65,13 @@ namespace Promenade.Services
                 {
                     if (poi.Tags.Any(t => t.Key == tagData.Key && t.Value == tagData.Value))
                     {
+                        tagName = tagData.Name.UppercaseFirst();
                         return category.Id;
                     }
                 }
             }
 
+            tagName = "";
             return -1;
         }
     }

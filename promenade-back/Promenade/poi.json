@@ -2,7 +2,6 @@
   {
     "id": 1,
     "name": "архитектура",
-    "placeholder": "Архитектурный объект",
     "icon": "landmark",
     "tags": [
       {
@@ -76,7 +75,6 @@
   {
     "id": 2,
     "name": "башни",
-    "placeholder": "Бфшня",
     "icon": "chess-rook",
     "tags": [
       {
@@ -100,7 +98,6 @@
   {
     "id": 3,
     "name": "водные объекты",
-    "placeholder": "Водный объект",
     "icon": "faucet",
     "tags": [
       {
@@ -124,7 +121,6 @@
   {
     "id": 4,
     "name": "военная история",
-    "placeholder": "Исторический объект",
     "icon": "fighter-jet",
     "tags": [
       {
@@ -173,7 +169,6 @@
   {
     "id": 5,
     "name": "городские удобства",
-    "placeholder": "Городской объект",
     "icon": "street-view",
     "tags": [
       {
@@ -207,7 +202,6 @@
   {
     "id": 6,
     "name": "необычные точки",
-    "placeholder": "Что-то неизвестное",
     "icon": "search-location",
     "tags": [
       {
@@ -281,7 +275,6 @@
   {
     "id": 7,
     "name": "памятники",
-    "placeholder": "Памятник",
     "icon": "monument",
     "tags": [
       {
@@ -305,7 +298,6 @@
   {
     "id": 8,
     "name": "природные объекты",
-    "placeholder": "Природный объект",
     "icon": "tree",
     "tags": [
       {
@@ -334,7 +326,6 @@
   {
     "id": 9,
     "name": "религия",
-    "placeholder": "Церковь",
     "icon": "mosque",
     "tags": [
       {
@@ -408,7 +399,6 @@
   {
     "id": 10,
     "name": "руины",
-    "placeholder": "Руины",
     "icon": "house-damage",
     "tags": [
       {
