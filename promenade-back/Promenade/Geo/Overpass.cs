@@ -40,7 +40,6 @@ namespace Promenade.Geo
 
             var query = ConstructQuery();
             var response = Utils.PostRequest(_url, query);
-            Console.WriteLine(response);
             var pois = new List<Poi>();
 
             try
