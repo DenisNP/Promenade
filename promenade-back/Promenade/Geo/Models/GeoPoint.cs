@@ -15,10 +15,12 @@ namespace Promenade.Geo.Models
             Lng = lng;
         }
 
-        public string AsString(char separator = ',')
+        public string AsString(char separator = ',', bool reverse = false)
         {
             var cInfo = new CultureInfo("en-US", false);
-            return Lat.ToString(cInfo) + separator + Lng.ToString(cInfo);
+            return !reverse
+                ? Lat.ToString(cInfo) + separator + Lng.ToString(cInfo)
+                : Lng.ToString(cInfo) + separator + Lat.ToString(cInfo);
         }
     }
 }
