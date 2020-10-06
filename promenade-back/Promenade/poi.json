@@ -5,29 +5,9 @@
     "icon": "landmark",
     "tags": [
       {
-        "key": "barrier",
-        "value": "city_wall",
-        "name": "городская стена"
-      },
-      {
-        "key": "barrier",
-        "value": "ditch",
-        "name": "ров"
-      },
-      {
-        "key": "building",
-        "value": "temple",
-        "name": "замок"
-      },
-      {
-        "key": "building",
-        "value": "conservatory",
-        "name": "оранжерея"
-      },
-      {
-        "key": "building",
-        "value": "greenhouse",
-        "name": "теплица"
+        "key": "historic",
+        "value": "aqueduct",
+        "name": "акведук"
       },
       {
         "key": "building",
@@ -35,24 +15,9 @@
         "name": "арка"
       },
       {
-        "key": "historic",
-        "value": "aqueduct",
-        "name": "акведук"
-      },
-      {
-        "key": "historic",
-        "value": "building",
-        "name": "историческое здание"
-      },
-      {
-        "key": "historic",
-        "value": "castle",
-        "name": "замок"
-      },
-      {
-        "key": "historic",
-        "value": "castle_wall",
-        "name": "стена замка"
+        "key": "barrier",
+        "value": "city_wall",
+        "name": "городская стена"
       },
       {
         "key": "historic",
@@ -61,16 +26,51 @@
       },
       {
         "key": "historic",
-        "value": "manor",
-        "name": "усадьба"
+        "value": "tomb",
+        "name": "гробница"
+      },
+      {
+        "key": "building",
+        "value": "temple",
+        "name": "замок"
       },
       {
         "key": "historic",
-        "value": "tomb",
-        "name": "гробница"
+        "value": "castle",
+        "name": "замок"
+      },
+      {
+        "key": "historic",
+        "value": "building",
+        "name": "историческое здание"
+      },
+      {
+        "key": "building",
+        "value": "conservatory",
+        "name": "оранжерея"
+      },
+      {
+        "key": "barrier",
+        "value": "ditch",
+        "name": "ров"
+      },
+      {
+        "key": "historic",
+        "value": "castle_wall",
+        "name": "стена замка"
+      },
+      {
+        "key": "building",
+        "value": "greenhouse",
+        "name": "теплица"
+      },
+      {
+        "key": "historic",
+        "value": "manor",
+        "name": "усадьба"
       }
     ],
-    "defaultEnabled": true
+    "defaultEnabled": false
   },
   {
     "id": 2,
@@ -78,9 +78,14 @@
     "icon": "chess-rook",
     "tags": [
       {
-        "key": "building",
-        "value": "transformer_tower",
-        "name": "трансформаторная вышка"
+        "key": "historic",
+        "value": "tower",
+        "name": "башня"
+      },
+      {
+        "key": "man_made",
+        "value": "tower",
+        "name": "башня"
       },
       {
         "key": "building",
@@ -88,9 +93,34 @@
         "name": "водонапорная башня"
       },
       {
-        "key": "historic",
-        "value": "tower",
-        "name": "башня"
+        "key": "man_made",
+        "value": "water_tower",
+        "name": "водонапорная башня"
+      },
+      {
+        "key": "man_made",
+        "value": "communications_tower",
+        "name": "вышка связи"
+      },
+      {
+        "key": "man_made",
+        "value": "mast",
+        "name": "мачта"
+      },
+      {
+        "key": "man_made",
+        "value": "lighthouse",
+        "name": "маяк"
+      },
+      {
+        "key": "man_made",
+        "value": "beacon",
+        "name": "радиомаяк"
+      },
+      {
+        "key": "building",
+        "value": "transformer_tower",
+        "name": "трансформаторная вышка"
       }
     ],
     "defaultEnabled": true
@@ -101,9 +131,49 @@
     "icon": "faucet",
     "tags": [
       {
-        "key": "amenity",
-        "value": "fountain",
-        "name": "фонтан"
+        "key": "waterway",
+        "value": "lock_gate",
+        "name": "водные ворота"
+      },
+      {
+        "key": "waterway",
+        "value": "waterfall",
+        "name": "водопад"
+      },
+      {
+        "key": "man_made",
+        "value": "groyne",
+        "name": "волнолом"
+      },
+      {
+        "key": "man_made",
+        "value": "breakwater",
+        "name": "волнорез"
+      },
+      {
+        "key": "waterway",
+        "value": "dam",
+        "name": "дамба"
+      },
+      {
+        "key": "man_made",
+        "value": "water_well",
+        "name": "колодец"
+      },
+      {
+        "key": "man_made",
+        "value": "pier",
+        "name": "пирс"
+      },
+      {
+        "key": "emergency",
+        "value": "drinking_water",
+        "name": "питьевая вода"
+      },
+      {
+        "key": "waterway",
+        "value": "weir",
+        "name": "плотина"
       },
       {
         "key": "emergency",
@@ -111,12 +181,12 @@
         "name": "пожарный водоём"
       },
       {
-        "key": "emergency",
-        "value": "drinking_water",
-        "name": "питьевая вода"
+        "key": "amenity",
+        "value": "fountain",
+        "name": "фонтан"
       }
     ],
-    "defaultEnabled": true
+    "defaultEnabled": false
   },
   {
     "id": 4,
@@ -124,9 +194,29 @@
     "icon": "fighter-jet",
     "tags": [
       {
+        "key": "man_made",
+        "value": "bunker_silo",
+        "name": "бункер"
+      },
+      {
+        "key": "military",
+        "value": "bunker",
+        "name": "бункер"
+      },
+      {
         "key": "historic",
-        "value": "aircraft",
-        "name": "самолет"
+        "value": "ship",
+        "name": "корабль"
+      },
+      {
+        "key": "historic",
+        "value": "bomb_crater",
+        "name": "кратер от бомбы"
+      },
+      {
+        "key": "historic",
+        "value": "memorial",
+        "name": "мемориал"
       },
       {
         "key": "historic",
@@ -134,9 +224,9 @@
         "name": "место сражения"
       },
       {
-        "key": "historic",
-        "value": "bomb_crater",
-        "name": "кратер от бомбы"
+        "key": "man_made",
+        "value": "obelisk",
+        "name": "обелиск"
       },
       {
         "key": "historic",
@@ -150,18 +240,18 @@
       },
       {
         "key": "historic",
-        "value": "fort",
-        "name": "форт"
-      },
-      {
-        "key": "historic",
-        "value": "ship",
-        "name": "корабль"
+        "value": "aircraft",
+        "name": "самолет"
       },
       {
         "key": "historic",
         "value": "tank",
         "name": "танк"
+      },
+      {
+        "key": "historic",
+        "value": "fort",
+        "name": "форт"
       }
     ],
     "defaultEnabled": true
@@ -172,9 +262,14 @@
     "icon": "street-view",
     "tags": [
       {
-        "key": "amenity",
-        "value": "bench",
-        "name": "скамейка"
+        "key": "leisure",
+        "value": "track",
+        "name": "беговая дорожка"
+      },
+      {
+        "key": "highway",
+        "value": "traffic_mirror",
+        "name": "зеркало"
       },
       {
         "key": "amenity",
@@ -183,18 +278,23 @@
       },
       {
         "key": "amenity",
+        "value": "shelter",
+        "name": "навес от дождя"
+      },
+      {
+        "key": "amenity",
         "value": "clock",
         "name": "наружные часы"
       },
       {
         "key": "amenity",
-        "value": "shelter",
-        "name": "навес от дождя"
+        "value": "bench",
+        "name": "скамейка"
       },
       {
-        "key": "highway",
-        "value": "traffic_mirror",
-        "name": "зеркало"
+        "key": "leisure",
+        "value": "fitness_station",
+        "name": "спортивная площадка"
       }
     ],
     "defaultEnabled": false
@@ -205,19 +305,14 @@
     "icon": "search-location",
     "tags": [
       {
-        "key": "aeroway",
-        "value": "windsock",
-        "name": "флюгер"
+        "key": "tourism",
+        "value": "artwork",
+        "name": "арт-объект"
       },
       {
-        "key": "amenity",
-        "value": "public_bookcase",
-        "name": "обмен книгами"
-      },
-      {
-        "key": "amenity",
-        "value": "hunting_stand",
-        "name": "охотничья станция"
+        "key": "historic",
+        "value": "archaeological_site",
+        "name": "археологические раскопки"
       },
       {
         "key": "building",
@@ -225,19 +320,14 @@
         "name": "бункер"
       },
       {
-        "key": "building",
-        "value": "tree_house",
-        "name": "домик на дереве"
-      },
-      {
-        "key": "geological",
-        "value": "palaeontological_site",
-        "name": "раскопки"
+        "key": "historic",
+        "value": "railway_car",
+        "name": "вагон"
       },
       {
         "key": "historic",
-        "value": "archaeological_site",
-        "name": "археологические раскопки"
+        "value": "milestone",
+        "name": "верстовой камень"
       },
       {
         "key": "historic",
@@ -250,14 +340,24 @@
         "name": "водомерная отметка"
       },
       {
+        "key": "man_made",
+        "value": "watermill",
+        "name": "водяная мельница"
+      },
+      {
+        "key": "building",
+        "value": "tree_house",
+        "name": "домик на дереве"
+      },
+      {
         "key": "historic",
         "value": "locomotive",
         "name": "локомотив"
       },
       {
-        "key": "historic",
-        "value": "milestone",
-        "name": "верстовой камень"
+        "key": "man_made",
+        "value": "windmill",
+        "name": "мельница"
       },
       {
         "key": "historic",
@@ -265,9 +365,59 @@
         "name": "место казни"
       },
       {
-        "key": "historic",
-        "value": "railway_car",
-        "name": "вагон"
+        "key": "tourism",
+        "value": "viewpoint",
+        "name": "обзорная точка"
+      },
+      {
+        "key": "amenity",
+        "value": "public_bookcase",
+        "name": "обмен книгами"
+      },
+      {
+        "key": "amenity",
+        "value": "hunting_stand",
+        "name": "охотничья станция"
+      },
+      {
+        "key": "leisure",
+        "value": "bird_hide",
+        "name": "площадка обзора птиц"
+      },
+      {
+        "key": "geological",
+        "value": "palaeontological_site",
+        "name": "раскопки"
+      },
+      {
+        "key": "leisure",
+        "value": "slipway",
+        "name": "стапель"
+      },
+      {
+        "key": "leisure",
+        "value": "picnic_table",
+        "name": "стол для пикника"
+      },
+      {
+        "key": "leisure",
+        "value": "bandstand",
+        "name": "сцена"
+      },
+      {
+        "key": "man_made",
+        "value": "survey_point",
+        "name": "топографическая точка"
+      },
+      {
+        "key": "man_made",
+        "value": "flagpole",
+        "name": "флагшток"
+      },
+      {
+        "key": "aeroway",
+        "value": "windsock",
+        "name": "флюгер"
       }
     ],
     "defaultEnabled": true
@@ -279,18 +429,13 @@
     "tags": [
       {
         "key": "historic",
-        "value": "monument",
-        "name": "монумент"
-      },
-      {
-        "key": "historic",
-        "value": "memorial",
-        "name": "мемориал"
-      },
-      {
-        "key": "historic",
         "value": "stone",
         "name": "камень"
+      },
+      {
+        "key": "historic",
+        "value": "monument",
+        "name": "монумент"
       }
     ],
     "defaultEnabled": false
@@ -302,13 +447,43 @@
     "tags": [
       {
         "key": "barrier",
-        "value": "debris",
-        "name": "осыпь"
-      },
-      {
-        "key": "barrier",
         "value": "log",
         "name": "бревно"
+      },
+      {
+        "key": "ford",
+        "value": "yes",
+        "name": "брод"
+      },
+      {
+        "key": "natural",
+        "value": "rock",
+        "name": "булыжник"
+      },
+      {
+        "key": "natural",
+        "value": "spring",
+        "name": "водный источник"
+      },
+      {
+        "key": "natural",
+        "value": "geyser",
+        "name": "гейзер"
+      },
+      {
+        "key": "natural",
+        "value": "hot_spring",
+        "name": "горячий сточник"
+      },
+      {
+        "key": "natural",
+        "value": "stone",
+        "name": "камень"
+      },
+      {
+        "key": "leisure",
+        "value": "firepit",
+        "name": "кострище"
       },
       {
         "key": "geological",
@@ -316,9 +491,19 @@
         "name": "обнажение породы"
       },
       {
-        "key": "ford",
-        "value": "yes",
-        "name": "брод"
+        "key": "barrier",
+        "value": "debris",
+        "name": "осыпь"
+      },
+      {
+        "key": "natural",
+        "value": "blowhole",
+        "name": "отдушина"
+      },
+      {
+        "key": "natural",
+        "value": "cave_entrance",
+        "name": "пещера"
       }
     ],
     "defaultEnabled": true
@@ -329,24 +514,19 @@
     "icon": "mosque",
     "tags": [
       {
-        "key": "amenity",
-        "value": "monastery",
-        "name": "монастырь"
+        "key": "historic",
+        "value": "wayside_shrine",
+        "name": "алтарь"
       },
       {
-        "key": "amenity",
-        "value": "place_of_worship",
-        "name": "святое место"
+        "key": "historic",
+        "value": "wayside_cross",
+        "name": "крест"
       },
       {
-        "key": "building",
-        "value": "cathedral",
-        "name": "собор"
-      },
-      {
-        "key": "building",
-        "value": "church",
-        "name": "церковь"
+        "key": "man_made",
+        "value": "cross",
+        "name": "крест"
       },
       {
         "key": "building",
@@ -354,9 +534,29 @@
         "name": "мечеть"
       },
       {
+        "key": "amenity",
+        "value": "monastery",
+        "name": "монастырь"
+      },
+      {
+        "key": "historic",
+        "value": "monastery",
+        "name": "монастырь"
+      },
+      {
         "key": "building",
         "value": "religious",
         "name": "религиозное строение"
+      },
+      {
+        "key": "historic",
+        "value": "rune_stone",
+        "name": "рунический камень"
+      },
+      {
+        "key": "amenity",
+        "value": "place_of_worship",
+        "name": "святое место"
       },
       {
         "key": "building",
@@ -369,29 +569,19 @@
         "name": "синагога"
       },
       {
-        "key": "historic",
+        "key": "building",
+        "value": "cathedral",
+        "name": "собор"
+      },
+      {
+        "key": "building",
         "value": "church",
         "name": "церковь"
       },
       {
         "key": "historic",
-        "value": "monastery",
-        "name": "монастырь"
-      },
-      {
-        "key": "historic",
-        "value": "rune_stone",
-        "name": "рунический камень"
-      },
-      {
-        "key": "historic",
-        "value": "wayside_cross",
-        "name": "крест"
-      },
-      {
-        "key": "historic",
-        "value": "wayside_shrine",
-        "name": "алтарь"
+        "value": "church",
+        "name": "церковь"
       }
     ],
     "defaultEnabled": false
@@ -402,6 +592,21 @@
     "icon": "house-damage",
     "tags": [
       {
+        "key": "railway",
+        "value": "abandoned",
+        "name": "заброшенная Ж/Д"
+      },
+      {
+        "key": "railway",
+        "value": "disused",
+        "name": "заброшенная Ж/Д"
+      },
+      {
+        "key": "historic",
+        "value": "wreck",
+        "name": "кораблекрушение"
+      },
+      {
         "key": "building",
         "value": "ruins",
         "name": "руины"
@@ -410,11 +615,59 @@
         "key": "historic",
         "value": "ruins",
         "name": "руины"
+      }
+    ],
+    "defaultEnabled": true
+  },
+  {
+    "id": 11,
+    "name": "промышленность",
+    "icon": "industry",
+    "tags": [
+      {
+        "key": "man_made",
+        "value": "gasometer",
+        "name": "газгольдер"
       },
       {
-        "key": "historic",
-        "value": "wreck",
-        "name": "кораблекрушение"
+        "key": "man_made",
+        "value": "goods_conveyor",
+        "name": "конвейер"
+      },
+      {
+        "key": "man_made",
+        "value": "reservoir_covered",
+        "name": "резервуар"
+      },
+      {
+        "key": "power",
+        "value": "heliostat",
+        "name": "солнечная батарея"
+      },
+      {
+        "key": "man_made",
+        "value": "chimney",
+        "name": "труба"
+      },
+      {
+        "key": "man_made",
+        "value": "silo",
+        "name": "хранилище"
+      },
+      {
+        "key": "man_made",
+        "value": "storage_tank",
+        "name": "хранилище"
+      },
+      {
+        "key": "man_made",
+        "value": "mineshaft",
+        "name": "шахта"
+      },
+      {
+        "key": "man_made",
+        "value": "adit",
+        "name": "штольня"
       }
     ],
     "defaultEnabled": true
