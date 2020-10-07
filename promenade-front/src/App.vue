@@ -1,28 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <f7-app :params="f7params">
+        <f7-view :push-state="true" url="/" id="main" main tab tab-active />
+
+        <SettingsView />
+    </f7-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+
+import bridge from '@vkontakte/vk-bridge';
+import MapView from './components/view/MapView.vue';
+import SettingsView from './components/view/SettingsView.vue';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld,
-  },
+    components: {
+        SettingsView,
+    },
+    data() {
+        return {
+            f7params: {
+                theme: 'ios',
+                name: 'Название',
+                id: 'id',
+                routes: [
+                    {
+                        path: '/',
+                        component: MapView,
+                    },
+                ],
+            },
+            moveInterval: null,
+        };
+    },
+    mounted() {
+        bridge.send('VKWebAppInit');
+        this.$store.dispatch('init');
+
+        if (this.moveInterval) clearInterval(this.moveInterval);
+        this.moveInterval = setInterval(() => {
+            this.$store.dispatch('move');
+        }, 5000); // 5 секнуд
+    },
 };
+
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
