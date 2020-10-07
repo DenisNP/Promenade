@@ -12,7 +12,6 @@ namespace Promenade.Services
     public class GeoService
     {
         private const int SavedToRawRatio = 10;
-        private const int VisitedToSkipRatio = 10;
         private readonly double[] _rangeDistances = {0.1, 0.67, 1, 2};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
@@ -129,8 +128,8 @@ namespace Promenade.Services
                 var actualDist = GeoUtils.Distance(p, center);
                 var diff = actualDist - distance;
                 var coeff = diff > 0 ? FurtherToCloserRatio : 1.0;
-                var rawValue = coeff * Math.Abs(diff);
-                var savedValue = user.PoiSaved.ContainsKey(poiId) ? user.PoiSaved[poiId] : 0;
+                var rawValue = coeff * Math.Sqrt(Math.Abs(diff));
+                var savedValue = user.SavedPoiScore(poiId);
 
                 return rawValue + SavedToRawRatio * savedValue;
             }
@@ -165,10 +164,9 @@ namespace Promenade.Services
             state ??= GetState(userId);
             if (state.Poi != null)
             {
-                var addValue = state.IsNearPoi ? VisitedToSkipRatio : 1;
-                if (!state.User.PoiSaved.ContainsKey(state.Poi.Id)) state.User.PoiSaved[state.Poi.Id] = 0;
-                state.User.PoiSaved[state.Poi.Id] += addValue;
-                
+                // update user data
+                state.User.VisitPoi(state.Poi.Id, state.Poi.CategoryId, state.IsNearPoi);
+
                 // update db
                 _dbService.UpdateAsync(state.User);
                 
