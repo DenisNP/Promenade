@@ -1,27 +1,27 @@
 <template>
     <div class="MapControls">
         <div class="MapControlsGroup" v-if="mapState === 'isochrone'">
-            <div class="MainButton">
+            <div class="MainButton" @click="find()">
                 <img src="@/assets/run-person.svg">
             </div>
             <div class="SubButtonLeft"
-                @click="settingsShow(true)">
+                @click="$f7router.navigate('/settings')">
                 <img src="@/assets/settings.svg">
             </div>
             <RoundSelector/>
         </div>
 
         <div class="MapControlsGroup" v-if="mapState === 'route' ">
-            <div class="MainButton" @click="stopRoute()">
+            <div class="MainButton" @click="stop()">
                 <img src="@/assets/cross.svg">
             </div>
-            <div class="SubButtonLeft" @click="getNewPoi()">
+            <div class="SubButtonLeft" @click="find()">
                 <img src="@/assets/reload.svg">
             </div>
         </div>
 
         <div class="MapControlsGroup" v-if="mapState === 'finish'">
-            <div class="MainButton" @click="finish()">
+            <div class="MainButton" @click="stop()">
                 <img src="@/assets/check.svg">
             </div>
             <div class="SubButtonLeft" @click="goToStories()">
@@ -51,6 +51,8 @@ export default {
     methods: {
         ...mapActions([
             'settingsShow',
+            'find',
+            'stop',
         ]),
     },
 };

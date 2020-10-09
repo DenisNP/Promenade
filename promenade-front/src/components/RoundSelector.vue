@@ -3,7 +3,7 @@
     <div class="selectorItem"
         v-for="item in items"
         :key="item.key"
-        :class="{active: item.key === isochrone.zone}"
+        :class="{active: item.key === range}"
         :style="item.style"
         @click="setActiveItem(item.key)"
         >
@@ -14,7 +14,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 
 export default {
     components: {
@@ -23,22 +22,22 @@ export default {
         return {
             items: [
                 {
-                    key: '10',
+                    key: 10,
                     name: '10 мин',
                     style: 'margin-left: 60px',
                 },
                 {
-                    key: '15',
+                    key: 15,
                     name: '15 мин',
                     style: 'margin-left: 74px',
                 },
                 {
-                    key: '30',
+                    key: 30,
                     name: '30 мин',
                     style: 'margin-left: 74px',
                 },
                 {
-                    key: '2',
+                    key: 2,
                     name: 'Рядом',
                     style: 'margin-left: 60px',
                 },
@@ -47,13 +46,13 @@ export default {
     },
     methods: {
         setActiveItem(key) {
-            this.$store.commit('setIsochroneZone', key);
+            this.$store.commit('setRange', key);
         },
     },
     computed: {
-        ...mapGetters({
-            isochrone: 'isochrone',
-        }),
+        range() {
+            return this.$store.state.range;
+        },
     },
 };
 </script>

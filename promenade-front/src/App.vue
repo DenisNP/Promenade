@@ -1,8 +1,7 @@
 <template>
     <f7-app :params="f7params">
-        <f7-view :push-state="true" url="/" id="main" main tab tab-active />
-
-        <SettingsView />
+            <f7-view :push-state="true" url="/" id="main" main tab tab-active />
+            <!--<f7-view :push-state="true" url="/settings" id="settings" /> -->
     </f7-app>
 </template>
 
@@ -14,7 +13,6 @@ import SettingsView from './components/view/SettingsView.vue';
 
 export default {
     components: {
-        SettingsView,
     },
     data() {
         return {
@@ -26,6 +24,10 @@ export default {
                     {
                         path: '/',
                         component: MapView,
+                    },
+                    {
+                        path: '/settings',
+                        component: SettingsView,
                     },
                 ],
             },

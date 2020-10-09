@@ -9,71 +9,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        user: {
-            id: '463377',
-            categories: [
-                {
-                    enabled: true,
-                    id: 1,
-                    name: 'архитектура',
-                    icon: 'landmark',
-                },
-                {
-                    enabled: true,
-                    id: 2,
-                    name: 'башни',
-                    icon: 'chess-rook',
-                },
-                {
-                    enabled: true,
-                    id: 3,
-                    name: 'водные объекты',
-                    icon: 'faucet',
-                },
-                {
-                    enabled: true,
-                    id: 4,
-                    name: 'военная история',
-                    icon: 'fighter-jet',
-                },
-                {
-                    enabled: false,
-                    id: 5,
-                    name: 'городские удобства',
-                    icon: 'street-view',
-                },
-                {
-                    enabled: true,
-                    id: 6,
-                    name: 'необычные точки',
-                    icon: 'search-location',
-                },
-                {
-                    enabled: false,
-                    id: 7,
-                    name: 'памятники',
-                    icon: 'monument',
-                },
-                {
-                    enabled: true,
-                    id: 8,
-                    name: 'природные объекты',
-                    icon: 'tree',
-                },
-                {
-                    enabled: false,
-                    id: 9,
-                    name: 'религия',
-                    icon: 'mosque',
-                },
-                {
-                    enabled: true,
-                    id: 10,
-                    name: 'руины',
-                    icon: 'house-damage',
-                },
-            ],
-        },
+        user: null,
         poi: null,
         route: null,
         coordinates: {
@@ -82,33 +18,34 @@ export default new Vuex.Store({
         },
         isNearPoi: false,
         settingsOpened: false,
-        isochrone: {
-            zone: '10',
-        },
+        range: 10,
     },
     getters: {
         state(state) {
-            return state;
+            return state || {};
         },
         poi(state) {
-            return state.poi;
+            return state.poi || {};
         },
         user(state) {
-            return state.user;
+            return state.user || {};
         },
         mapState(state) {
-            if (!state.Poi) return 'isochrone';
+            if (!state.poi) return 'isochrone';
             if (!state.isNearPoi) return 'route';
             return 'finish';
         },
         settingsOpened(state) {
             return state.settingsOpened;
         },
-        isochrone(state) {
-            return state.isochrone;
-        },
         coordinates(state) {
-            return state.coordinates;
+            return state.coordinates || {};
+        },
+        showIsochrone(state) {
+            return (!state.poi && Math.abs(state.coordinates.lat) > 0.0001);
+        },
+        getCategory(state) {
+            return (categoryId) => state.user.categories.find((x) => x.id === categoryId);
         },
     },
     mutations: {
@@ -120,12 +57,13 @@ export default new Vuex.Store({
         },
         setState(state, result) {
             state.user = result.user;
-            state.roi = result.roi;
+            state.poi = result.poi;
             state.route = result.route;
+            state.coordinates = result.coordinates;
             state.isNearPoi = result.isNearPoi;
         },
-        setIsochroneZone(state, key) {
-            state.isochrone.zone = key;
+        setRange(state, key) {
+            state.range = key;
         },
     },
     actions: {
@@ -133,7 +71,8 @@ export default new Vuex.Store({
             commit('settingsShow', isOpened);
         },
         async settingsCategorySet({ commit }, { key }) {
-            // TODO добавить проверку если state не изменился
+            // TODO добавить проверку если state не изменился иначе будет дергаться
+            // подумать
             const result = await api('toggle', { categoryId: key });
             commit('setState', result);
         },
@@ -145,27 +84,36 @@ export default new Vuex.Store({
             bridge.send('VKWebAppGetGeodata');
             bridge.subscribe(async (e) => {
                 if (e.type !== 'VKWebAppGetGeodataResult') return;
-                if (e.data.availible === 1) {
+                if (e.data.available === 1) {
                     const result = await api('move', e.data);
                     commit('setState', result);
                 } else {
-                    /* TODO учитывать, если от пользователя пришло availible 0 и обрабатывать это
+                    /* TODO учитывать, если от пользователя пришло available 0 и обрабатывать это
                     возможно коммитить что-то другое */
                 }
             });
         },
-        async find({ commit }, { range }) {
+        async find({ commit, state }) {
+            const rangeMapper = {
+                2: '0',
+                10: '1',
+                15: '2',
+                30: '3',
+            };
+
             bridge.send('VKWebAppGetGeodata');
             bridge.subscribe(async (e) => {
                 if (e.type !== 'VKWebAppGetGeodataResult') return;
-                if (e.data.availible === 1) {
+                if (e.data.available === 1) {
+                    const { lat, long } = e.data;
                     const result = await api('find', {
-                        geo: e.data,
-                        rangeId: range,
+                        lat,
+                        lng: long,
+                        rangeId: rangeMapper[state.isochrone.zone],
                     });
                     commit('setState', result);
                 } else {
-                    /* TODO учитывать, если от пользователя пришло availible 0 и обрабатывать это
+                    /* TODO учитывать, если от пользователя пришло available 0 и обрабатывать это
                     возможно коммитить что-то другое */
                 }
             });
