@@ -60,3 +60,18 @@ export const getNumericPhrase = (num, one, few, many) => {
 };
 
 export const ranges = [2, 10, 15, 30];
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180.0);
+}
+
+export const geoDistance = ([lon1, lat1], [lon2, lat2]) => {
+    const R = 6371.01; // Radius of the Earth in km
+    const dLat = deg2rad(lat2 - lat1); // deg2rad above
+    const dLon = deg2rad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2))
+        * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+};

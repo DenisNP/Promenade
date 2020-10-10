@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { getSearch, getUserId, isDev } from './utils';
+import { getSearch, getUserId, isDev } from '../utils';
 
 export default async (method, data) => {
     const apiAddress = isDev() ? 'http://localhost:5000' : '';

@@ -141,6 +141,7 @@ export default {
             // draw new poi
             const category = this.$store.getters.getCategory(this.poi.categoryId);
             const node = document.createElement('div');
+            node.className = 'flag-container';
             node.innerHTML = `
                 <div class="flag">
                     <div class="title">${this.poi.description}</div>
@@ -228,6 +229,10 @@ export default {
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.flag-container {
+    z-index: 2;
 }
 
 .flag {

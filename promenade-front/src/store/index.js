@@ -2,8 +2,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VKC from '@denisnp/vkui-connect-helper';
 import {
-    getAppId, getPlatform, ranges,
-} from '@/store/utils';
+    geoDistance, getAppId, getPlatform, ranges,
+} from '../utils';
 import api from './api';
 
 
@@ -87,9 +87,14 @@ export default new Vuex.Store({
             const result = await api('init');
             commit('setState', result);
         },
-        async move({ commit }) {
+        async move({ state, commit }) {
             const [geo] = await VKC.send('VKWebAppGetGeodata');
             if (!geo) return;
+            const dist = geoDistance(
+                [geo.lat, geo.long],
+                [state.coordinates.lat, state.coordinates.lng],
+            );
+            if (dist < 0.02) return;
             const result = await api('move', { lat: geo.lat, lng: geo.long });
             commit('setState', result);
         },
