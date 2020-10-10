@@ -69,7 +69,9 @@ export default new Vuex.Store({
                 { status_bar_style: 'dark', action_bar_color: '#5a3fc0' },
             );
 
-            dispatch('init');
+            await dispatch('init');
+            // TODO show onboarding
+            dispatch('move');
 
             // store user name
             const [userData] = await VKC.send('VKWebAppGetUserInfo');
