@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -68,10 +69,17 @@ namespace Promenade.Controllers
             return HandleRequest<BaseRequest, State>(r => _geoService.Stop(r.UserId));
         }
 
-        [HttpPost("/toggle")]
-        public Task Toggle()
+        [HttpPost("/settings")]
+        public Task Settings()
         {
-            return HandleRequest<CategoryIdRequest, State>(r => _geoService.ToggleCategory(r.UserId, r.CategoryId));
+            return HandleRequest<SettingsRequest, State>(r =>
+            {
+                var data = new SettingsDto
+                {
+                    Categories = r.Categories.Select(c => new CategorySetting(c.Id, c.Enabled)).ToArray()
+                };
+                return _geoService.SetSettings(r.UserId, data);
+            });
         }
 
         private Task HandleRequest<TRequest, TResponse>(Func<TRequest, TResponse> handler, bool limitRatio = false) where TRequest : BaseRequest

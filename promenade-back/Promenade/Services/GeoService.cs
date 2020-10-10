@@ -180,19 +180,25 @@ namespace Promenade.Services
                 
             return state;
         }
-        
-        public State ToggleCategory(string userId, int categoryId)
+
+        public State SetSettings(string userId, SettingsDto settings)
         {
             var state = GetState(userId);
-            var category = state.User.Categories.FirstOrDefault(c => c.Id == categoryId);
             
-            if (category == null) throw new ArgumentOutOfRangeException(nameof(categoryId));
+            // set categories
+            foreach (var categorySetting in settings.Categories)
+            {
+                var category = state.User.Categories.SingleOrDefault(c => c.Id == categorySetting.Id);
+                if (category == null) continue;
+
+                category.Enabled = categorySetting.Enabled;
+            }
             
-            // cant disable the only enabled category
-            if (state.User.Categories.Count(c => c.Enabled) == 1) return state;
-            
-            // toggle category and save
-            category.Enabled = !category.Enabled;
+            // check if there is any category enabled
+            if (!state.User.Categories.Any(c => c.Enabled)) 
+                state.User.Categories[0].Enabled = true; // enable first
+
+            // save state and user data
             _dbService.UpdateAsync(state.User);
             SaveState(state);
 
