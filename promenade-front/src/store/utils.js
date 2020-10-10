@@ -1,20 +1,5 @@
 export const isDev = () => process.env.NODE_ENV === 'development';
 
-export const months = [
-    'январь',
-    'февраль',
-    'март',
-    'апрель',
-    'май',
-    'июнь',
-    'июль',
-    'август',
-    'сентябрь',
-    'октябрь',
-    'ноябрь',
-    'декабрь',
-];
-
 export const getSearch = () => {
     const { search } = window.location;
     return new URLSearchParams(search ? search.slice(1) : '');
@@ -53,23 +38,6 @@ export const drawImage = (imageSrc, x, y, w, h) => new Promise((resolve) => {
     img.src = imageSrc;
 });
 
-export const chunk = (arr, len) => {
-    const chunks = [];
-    let i = 0;
-    const n = arr.length;
-
-    while (i < n) {
-        chunks.push(arr.slice(i, i += len));
-    }
-
-    return chunks;
-};
-
-export const isCurrentDay = (d) => {
-    const now = new Date();
-    return now.getDate() === d.d && now.getMonth() + 1 === d.m && now.getFullYear() === d.y;
-};
-
 export const getNumericPhrase = (num, one, few, many) => {
     // eslint-disable-next-line no-param-reassign
     num = Number(num) < 0 ? 0 : Number(num);
@@ -91,4 +59,4 @@ export const getNumericPhrase = (num, one, few, many) => {
     return postfix;
 };
 
-export const range = (num) => [...Array(num).keys()];
+export const ranges = [2, 10, 15, 30];

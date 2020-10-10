@@ -1,13 +1,13 @@
 <template>
     <f7-page>
-        <div id="mapContainer" ref="mapCont" :style="mapSize" v-show="true" key="mapDiv"></div>
+        <div id="mapContainer" ref="mapCont"/>
         <MapControls/>
     </f7-page>
 </template>
 
 <script>
 
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapState } from 'vuex';
 
 import mapboxgl from 'mapbox-gl';
 import MapControls from '../MapControls.vue';
@@ -22,8 +22,10 @@ export default {
         map: null,
         center: [30.315, 59.939],
         zoom: 12,
-        mapSize: '',
         mapLoaded: false,
+        poiMarker: null,
+        myMarker: null,
+        interval: 0,
         accessToken: process.env.VUE_APP_MAPBOX_TOKEN,
         mapOptions: {
             style: 'mapbox://styles/wooferclaw/ckfqkf60k0a0l19nr455yeeu4',
@@ -33,18 +35,21 @@ export default {
         },
     }),
     computed: {
-        route() {
-            return this.$store.state.route;
-        },
-        ...mapGetters({
-            mapState: 'mapState',
+        ...mapState({
             user: 'user',
             coordinates: 'coordinates',
             poi: 'poi',
-            showIsochrone: 'showIsochrone',
+            route: 'route',
+            range: 'range',
         }),
-        range() {
-            return this.$store.state.range;
+        showIsochrone() {
+            return this.$store.getters.showIsochrone;
+        },
+        poiId() {
+            return this.poi === null ? -1 : this.poi.id;
+        },
+        coordsHash() {
+            return `${this.coordinates.lat}_${this.coordinates.lng}`;
         },
     },
     watch: {
@@ -57,28 +62,27 @@ export default {
         showIsochrone() {
             this.getIsochrone();
         },
+        poiId() {
+            this.getPoi();
+        },
+        coordsHash() {
+            this.getMyPosition();
+        },
     },
     methods: {
-        ...mapActions([
-            'settingsShow',
-        ]),
-        ...mapMutations({
-            mapStateChange: 'mapStateToggle',
-        }),
         getIsochrone() {
-            const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
-            const lng = 30.315;
-            const lat = 59.939;
-            // const { lat, lng } = this.Coordinates;
-            const profile = 'walking';
-            const minutes = this.range;
-            const query = `${urlBase + profile}/${lng},${lat}`
-            + `?contours_minutes=${minutes}&polygons=true&access_token=${process.env.VUE_APP_MAPBOX_TOKEN}`;
-
-            console.log(query);
-            console.log(this.showIsochrone);
-
+            if (!this.mapLoaded) return;
             if (this.showIsochrone) {
+                this.map.setLayoutProperty('isoLayer', 'visibility', 'visible');
+                const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
+                const { lat, lng } = this.coordinates;
+                const profile = 'walking';
+                const minutes = this.range;
+                const query = `${urlBase + profile}/${lng},${lat}
+                    ?contours_minutes=${minutes}
+                    &polygons=true
+                    &access_token=${this.accessToken}`;
+
                 fetch(query)
                     .then((response) => response.json())
                     .then((data) => {
@@ -86,9 +90,11 @@ export default {
                     })
                     .catch((error) => {
                         console.log(error);
-                    // TODO Нормальный вывод алерта или ошибки
+                        // TODO Нормальный вывод алерта или ошибки
                     });
-            } else if (this.map.getSource('iso')) { console.log('придумать как обнулять изохрону'); }
+            } else if (this.map.getSource('iso')) {
+                this.map.setLayoutProperty('isoLayer', 'visibility', 'none');
+            }
         },
         getRoute() {
             if (this.map.getSource('route')) {
@@ -98,7 +104,6 @@ export default {
             if (!this.mapLoaded || this.route == null) return;
 
             const coordArray = this.route.points.map((item) => [item.lng, item.lat]);
-            console.log(coordArray);
 
             this.map.addSource('route', {
                 type: 'geojson',
@@ -130,43 +135,67 @@ export default {
                     'line-dasharray': [0, 2],
                 },
             });
+        },
+        getPoi() {
+            if (this.poiMarker != null) this.poiMarker.remove();
+            if (this.poi === null) return;
 
+            // draw new poi
             const category = this.$store.getters.getCategory(this.poi.categoryId);
             const node = document.createElement('div');
-            // node.classList.add('flag');
-            node.innerHTML = '<div class="flag">'
-            + `<div class="title">${this.poi.description}</div>`
-            + '<div class="category">'
-            + `<i class="fas fa-${category.icon} icon"></i>`
-            + `${category.name}</div></div>`;
+            node.innerHTML = `
+                <div class="flag">
+                    <div class="title">${this.poi.description}</div>
+                    <div class="category">
+                        <i class="fas fa-${category.icon} icon"></i>${category.name}
+                    </div>
+                </div>`;
 
-
-            new mapboxgl.Marker(node)
-                .setLngLat([this.poi.coordinates.lng, this.poi.coordinates.lat])
+            this.poiMarker = new mapboxgl.Marker(node);
+            this.poiMarker.setLngLat([this.poi.coordinates.lng, this.poi.coordinates.lat])
                 .addTo(this.map);
+        },
+        getMyPosition() {
+            if (this.myMarker != null) this.myMarker.remove();
+            if (!this.$store.getters.hasCoordinates) return;
+
+            // draw marker with my position
+            const node = document.createElement('div');
+            node.innerHTML = `
+                <div class="my-position">
+                    ${this.$store.state.userName[0].toUpperCase()}
+                </div>`;
+
+            this.myMarker = new mapboxgl.Marker(node);
+            this.myMarker.setLngLat([this.coordinates.lng, this.coordinates.lat])
+                .addTo(this.map);
+        },
+        checkIfMove() {
+            if (!this.poi || !this.$store.getters.hasCoordinates) return;
+            this.$store.dispatch('move');
         },
         drawInitialMap() {
             this.getIsochrone();
             this.getRoute();
-            // this.Poi()
+            this.getPoi();
+            this.getMyPosition();
+            clearInterval(this.interval);
+            this.interval = setInterval(this.checkIfMove, 5000);
         },
     },
     mounted() {
-        this.mapSize = 'height: 100%; width: 100%;';
-        const self = this;
         window.mapboxgl.accessToken = this.accessToken;
         this.map = new window.mapboxgl.Map(this.mapOptions);
         this.map.addControl(new MapboxLanguage({
             defaultLanguage: 'ru',
         }));
         this.map.on('load', () => {
-            self.mapVisible = true;
-            self.$nextTick(() => {
-                self.map.resize();
-                self.mapLoaded = true;
+            this.$nextTick(() => {
+                this.map.resize();
+                this.mapLoaded = true;
                 this.drawInitialMap();
             });
-            self.map.addSource('iso', {
+            this.map.addSource('iso', {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -174,11 +203,13 @@ export default {
                 },
             });
 
-            self.map.addLayer({
+            this.map.addLayer({
                 id: 'isoLayer',
                 type: 'fill',
                 source: 'iso',
-                layout: {},
+                layout: {
+                    visibility: 'visible',
+                },
                 paint: {
                     'fill-color': '#5a3fc0',
                     'fill-opacity': 0.3,
@@ -193,50 +224,70 @@ export default {
 
 <style>
 
+#mapContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
 .flag {
-  max-width: 130px;
-  min-width: 65px;
-  transform: translateY(-45px) translateX(50%);
-  box-sizing: border-box;
-  background-color: #ffffff;
-  border-top: 1px solid #3F8AE0;
-  border-bottom: 1px solid #3F8AE0;
-  border-right: 1px solid #3F8AE0;
-  border-radius: 0 5px 5px 0;
-  padding: 5px 10px 5px 10px;
-  margin-left: 2px;
-  margin-bottom: 24px;
+    max-width: 130px;
+    min-width: 65px;
+    transform: translateY(-45px) translateX(50%);
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border-top: 1px solid #3F8AE0;
+    border-bottom: 1px solid #3F8AE0;
+    border-right: 1px solid #3F8AE0;
+    border-radius: 0 5px 5px 0;
+    padding: 5px 10px 5px 10px;
+    margin-left: 2px;
+    margin-bottom: 24px;
 }
 
 .flag .title {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 10px;
-  line-height: 14px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+    line-height: 14px;
 }
 
 .flag .category {
-  font-size: 9px;
-  color: #818C99;
+    font-size: 9px;
+    color: #818C99;
 }
 
-.flag .category .icon{
-  margin-right: 5px;
-  font-size: 12px;
-  color: #818C99;
+.flag .category .icon {
+    margin-right: 5px;
+    font-size: 12px;
+    color: #818C99;
 }
 
 .flag:before {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 0;
-  background-color: #3F8AE0;
-  width: 3px;
-  height: 90px;
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #3F8AE0;
+    width: 3px;
+    height: 90px;
+}
+
+.my-position {
+    background: #3F8AE0;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
 }
 
 </style>

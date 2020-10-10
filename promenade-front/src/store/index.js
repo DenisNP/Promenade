@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import bridge from '@vkontakte/vk-bridge';
+import VKC from '@denisnp/vkui-connect-helper';
+import {
+    getAppId, getPlatform, ranges,
+} from '@/store/utils';
 import api from './api';
 
-console.log(api);
 
 Vue.use(Vuex);
 
@@ -19,43 +21,23 @@ export default new Vuex.Store({
         isNearPoi: false,
         settingsOpened: false,
         range: 10,
+        isLoading: false,
+        userName: 'Я',
     },
     getters: {
-        state(state) {
-            return state || {};
+        hasCoordinates(state) {
+            return Math.abs(state.coordinates.lat) > 0.0001;
         },
-        poi(state) {
-            return state.poi || {};
-        },
-        user(state) {
-            return state.user || {};
-        },
-        mapState(state) {
-            if (!state.poi) return 'isochrone';
-            if (!state.isNearPoi) return 'route';
-            return 'finish';
-        },
-        settingsOpened(state) {
-            return state.settingsOpened;
-        },
-        coordinates(state) {
-            return state.coordinates || {};
-        },
-        showIsochrone(state) {
-            return (!state.poi && Math.abs(state.coordinates.lat) > 0.0001);
+        showIsochrone(state, getters) {
+            return !state.poi && getters.hasCoordinates;
         },
         getCategory(state) {
             return (categoryId) => state.user.categories.find((x) => x.id === categoryId);
         },
     },
     mutations: {
-        settingsShow(state, isOpened) {
-            state.settingsOpened = isOpened;
-        },
-        settingsCategorySet(state, { key, result }) {
-            state.user.categories[key].enabled = Boolean(result);
-        },
         setState(state, result) {
+            if (!result) return;
             state.user = result.user;
             state.poi = result.poi;
             state.route = result.route;
@@ -65,15 +47,40 @@ export default new Vuex.Store({
         setRange(state, key) {
             state.range = key;
         },
+        setIsLoading(state, isLoading) {
+            state.isLoading = isLoading;
+        },
+        setUserName(state, uName) {
+            state.userName = uName;
+        },
     },
     actions: {
-        settingsShow({ commit }, isOpened) {
-            commit('settingsShow', isOpened);
+        async start({ commit, dispatch }) {
+            VKC.init({
+                appId: getAppId(),
+                accessToken: getPlatform() === 'local' ? process.env.VUE_APP_VK_DEV_TOKEN : '',
+                asyncStyle: true,
+                apiVersion: '5.120',
+            });
+
+            // set bar color
+            VKC.bridge().send(
+                'VKWebAppSetViewSettings',
+                { status_bar_style: 'dark', action_bar_color: '#5a3fc0' },
+            );
+
+            dispatch('init');
+
+            // store user name
+            const [userData] = await VKC.send('VKWebAppGetUserInfo');
+            if (userData) {
+                let userName = `${userData.first_name || ''} ${userData.last_name || ''}`;
+                userName = userName.trim();
+                if (userName) commit('setUserName', userName);
+            }
         },
-        async settingsCategorySet({ commit }, { key }) {
-            // TODO добавить проверку если state не изменился иначе будет дергаться
-            // подумать
-            const result = await api('toggle', { categoryId: key });
+        async saveSettings({ commit }, data) {
+            const result = await api('settings', data);
             commit('setState', result);
         },
         async init({ commit }) {
@@ -81,42 +88,23 @@ export default new Vuex.Store({
             commit('setState', result);
         },
         async move({ commit }) {
-            bridge.send('VKWebAppGetGeodata');
-            bridge.subscribe(async (e) => {
-                if (e.type !== 'VKWebAppGetGeodataResult') return;
-                if (e.data.available === 1) {
-                    const result = await api('move', e.data);
-                    commit('setState', result);
-                } else {
-                    /* TODO учитывать, если от пользователя пришло available 0 и обрабатывать это
-                    возможно коммитить что-то другое */
-                }
-            });
+            const [geo] = await VKC.send('VKWebAppGetGeodata');
+            if (!geo) return;
+            const result = await api('move', { lat: geo.lat, lng: geo.long });
+            commit('setState', result);
         },
         async find({ commit, state }) {
-            const rangeMapper = {
-                2: '0',
-                10: '1',
-                15: '2',
-                30: '3',
-            };
-
-            bridge.send('VKWebAppGetGeodata');
-            bridge.subscribe(async (e) => {
-                if (e.type !== 'VKWebAppGetGeodataResult') return;
-                if (e.data.available === 1) {
-                    const { lat, long } = e.data;
-                    const result = await api('find', {
-                        lat,
-                        lng: long,
-                        rangeId: rangeMapper[state.isochrone.zone],
-                    });
-                    commit('setState', result);
-                } else {
-                    /* TODO учитывать, если от пользователя пришло available 0 и обрабатывать это
-                    возможно коммитить что-то другое */
-                }
+            const rangeId = ranges.findIndex((r) => r === state.range);
+            const [geo] = await VKC.send('VKWebAppGetGeodata');
+            if (!geo) return;
+            commit('setIsLoading', true);
+            const result = await api('find', {
+                lat: geo.lat,
+                lng: geo.long,
+                rangeId,
             });
+            commit('setIsLoading', false);
+            commit('setState', result);
         },
         async stop({ commit }) {
             const result = await api('stop');

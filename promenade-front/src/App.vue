@@ -7,7 +7,6 @@
 
 <script>
 
-import bridge from '@vkontakte/vk-bridge';
 import MapView from './components/view/MapView.vue';
 import SettingsView from './components/view/SettingsView.vue';
 
@@ -35,13 +34,7 @@ export default {
         };
     },
     mounted() {
-        bridge.send('VKWebAppInit');
-        this.$store.dispatch('init');
-
-        if (this.moveInterval) clearInterval(this.moveInterval);
-        this.moveInterval = setInterval(() => {
-            this.$store.dispatch('move');
-        }, 5000); // 5 секнуд
+        this.$store.dispatch('start');
     },
 };
 
