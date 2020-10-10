@@ -41,4 +41,25 @@ export default {
 </script>
 
 <style>
+body {
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior-y: none;
+}
+a, a:active, a:focus{
+    outline: none!important;
+}
+html,
+body {
+    position: fixed;
+    overflow: hidden;
+}
+:root, :root.theme-dark, :root .theme-dark {
+    --f7-theme-color: #3F8AE0;
+    --f7-theme-color-rgb: 63, 138, 224;
+    --f7-theme-color-shade: #2275d4;
+    --f7-theme-color-tint: #629fe6;
+    --f7-navbar-height: 52px;
+    --f7-list-margin-vertical: 0;
+}
 </style>

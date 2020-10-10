@@ -28,7 +28,7 @@ export default {
         interval: 0,
         accessToken: process.env.VUE_APP_MAPBOX_TOKEN,
         mapOptions: {
-            style: 'mapbox://styles/wooferclaw/ckfqkf60k0a0l19nr455yeeu4',
+            style: 'mapbox://styles/mapbox/light-v10',
             center: [30.315, 59.939],
             zoom: 12,
             container: 'mapContainer',
@@ -78,10 +78,8 @@ export default {
                 const { lat, lng } = this.coordinates;
                 const profile = 'walking';
                 const minutes = this.range;
-                const query = `${urlBase + profile}/${lng},${lat}
-                    ?contours_minutes=${minutes}
-                    &polygons=true
-                    &access_token=${this.accessToken}`;
+                const query = `${urlBase + profile}/${lng},${lat}?`
+                    + `contours_minutes=${minutes}&polygons=true&access_token=${this.accessToken}`;
 
                 fetch(query)
                     .then((response) => response.json())

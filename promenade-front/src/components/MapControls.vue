@@ -1,6 +1,6 @@
 <template>
     <div class="MapControls">
-        <div class="MapControlsGroup" v-if="mapState === 'isochrone'">
+        <div class="MapControlsGroup" v-if="buttonMode === 'start'">
             <div class="MainButton" @click="find()">
                 <img src="@/assets/run-person.svg">
             </div>
@@ -11,7 +11,7 @@
             <RoundSelector/>
         </div>
 
-        <div class="MapControlsGroup" v-if="mapState === 'route' ">
+        <div class="MapControlsGroup" v-if="buttonMode === 'clear'">
             <div class="MainButton" @click="stop()">
                 <img src="@/assets/cross.svg">
             </div>
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="MapControlsGroup" v-if="mapState === 'finish'">
+        <div class="MapControlsGroup" v-if="buttonMode === 'finish'">
             <div class="MainButton" @click="stop()">
                 <img src="@/assets/check.svg">
             </div>
@@ -32,9 +32,7 @@
 </template>
 
 <script>
-
-import { mapGetters, mapActions } from 'vuex';
-
+import { mapActions } from 'vuex';
 import RoundSelector from './RoundSelector.vue';
 
 export default {
@@ -43,14 +41,21 @@ export default {
     },
     data: () => ({}),
     computed: {
-        ...mapGetters({
-            mapState: 'mapState',
-            isochrone: 'isochrone',
-        }),
+        buttonMode() {
+            if (this.$store.state.isLoading) {
+                return 'loading';
+            }
+            if (!this.$store.state.poi) {
+                return 'start';
+            }
+            if (!this.$store.state.isNearPoi) {
+                return 'clear';
+            }
+            return 'finish';
+        },
     },
     methods: {
         ...mapActions([
-            'settingsShow',
             'find',
             'stop',
         ]),
@@ -74,7 +79,7 @@ export default {
 }
 
 .MainButton {
-position: absolute;
+    position: absolute;
     bottom: 50px;
     left: 50%;
     margin: 0 -50px;
@@ -91,7 +96,7 @@ position: absolute;
 }
 
 .SubButtonLeft {
-position: absolute;
+    position: absolute;
     bottom: 50px;
     left: 50%;
     margin: 0 0 0 -65px;
