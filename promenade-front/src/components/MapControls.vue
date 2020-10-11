@@ -135,7 +135,7 @@ export default {
 
 .SubButtonLeft {
     position: absolute;
-    bottom: 50px;
+    bottom: calc(50px + env(safe-area-inset-bottom));
     left: 50%;
     margin: 0 0 0 -65px;
     pointer-events: all;

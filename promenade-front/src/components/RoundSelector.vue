@@ -59,7 +59,7 @@ export default {
 <style>
 .roundSelector {
     position: absolute;
-    bottom: 60px;
+    bottom: calc(50px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateY(3px);
 }
