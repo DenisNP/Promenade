@@ -81,6 +81,7 @@ export default {
             if (!this.mapLoaded) return;
             if (this.showIsochrone) {
                 this.map.setLayoutProperty('isoLayer', 'visibility', 'visible');
+                this.map.setLayoutProperty('isoLayerLine', 'visibility', 'visible');
                 const urlBase = 'https://api.mapbox.com/isochrone/v1/mapbox/';
                 const { lat, lng } = this.coordinates;
                 const profile = 'walking';
@@ -99,6 +100,7 @@ export default {
                     });
             } else if (this.map.getSource('iso')) {
                 this.map.setLayoutProperty('isoLayer', 'visibility', 'none');
+                this.map.setLayoutProperty('isoLayerLine', 'visibility', 'none');
             }
         },
         getRoute() {
@@ -232,8 +234,21 @@ export default {
                     visibility: 'visible',
                 },
                 paint: {
-                    'fill-color': '#5a3fc0',
+                    'fill-color': '#459FC6',
                     'fill-opacity': 0.3,
+                },
+            }, 'poi-label');
+
+            this.map.addLayer({
+                id: 'isoLayerLine',
+                type: 'line',
+                source: 'iso',
+                layout: {
+                    visibility: 'visible',
+                },
+                paint: {
+                    'line-color': '#0F3B7C',
+                    'line-width': 1.5,
                 },
             }, 'poi-label');
         });
