@@ -73,18 +73,19 @@ export default new Vuex.Store({
                 { status_bar_style: 'dark', action_bar_color: '#5a3fc0' },
             );
 
-            await dispatch('init');
-
             // onboarded
             const [onb] = await VKC.send(
                 'VKWebAppStorageGet',
-                { keys: ['onboarded', 'villageShown'] },
+                { keys: ['onboarded'] },
             );
             if (onb && onb.keys) {
                 if (!onb.keys.some((k) => k.key === 'onboarded' && k.value)) {
                     commit('setShowOnboarding', true);
+                    console.log(111);
                 }
             }
+
+            await dispatch('init');
 
             if (state.user && !state.showOnboarding) dispatch('move');
 
