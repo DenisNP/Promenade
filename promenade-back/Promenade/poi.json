@@ -287,11 +287,6 @@
         "name": "наружные часы"
       },
       {
-        "key": "amenity",
-        "value": "bench",
-        "name": "скамейка"
-      },
-      {
         "key": "leisure",
         "value": "fitness_station",
         "name": "спортивная площадка"
