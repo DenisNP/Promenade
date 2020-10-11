@@ -137,8 +137,8 @@ export default {
                     'line-cap': 'round',
                 },
                 paint: {
-                    'line-color': 'blue',
-                    'line-width': 4,
+                    'line-color': '#4BB34B',
+                    'line-width': 3,
                     'line-dasharray': [0, 2],
                 },
             });
