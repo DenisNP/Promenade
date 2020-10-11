@@ -7,7 +7,7 @@
              :style="item.style"
              @click="setActiveItem(item.key)"
         >
-            <div class="selectorIcon"></div>
+            <div class="selectorIcon"/>
             <div class="selectorText">{{ item.name }}</div>
         </div>
     </div>
@@ -74,6 +74,7 @@ export default {
     margin: 7px 0 0;
     display: flex;
     align-items: center;
+    background: transparent;
 }
 
 .selectorIcon {
