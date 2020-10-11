@@ -23,6 +23,7 @@ export default new Vuex.Store({
         range: 15,
         isLoading: false,
         userName: 'Я',
+        showOnboarding: false,
     },
     getters: {
         hasCoordinates(state) {
@@ -53,6 +54,9 @@ export default new Vuex.Store({
         setUserName(state, uName) {
             state.userName = uName;
         },
+        setShowOnboarding(state, onb) {
+            state.showOnboarding = onb;
+        },
     },
     actions: {
         async start({ state, commit, dispatch }) {
@@ -70,8 +74,19 @@ export default new Vuex.Store({
             );
 
             await dispatch('init');
-            // TODO show onboarding
-            if (state.user) dispatch('move');
+
+            // onboarded
+            const [onb] = await VKC.send(
+                'VKWebAppStorageGet',
+                { keys: ['onboarded', 'villageShown'] },
+            );
+            if (onb && onb.keys) {
+                if (!onb.keys.some((k) => k.key === 'onboarded' && k.value)) {
+                    commit('setShowOnboarding', true);
+                }
+            }
+
+            if (state.user && !state.showOnboarding) dispatch('move');
 
             // store user name
             const [userData] = await VKC.send('VKWebAppGetUserInfo');
@@ -118,6 +133,10 @@ export default new Vuex.Store({
             const result = await api('stop');
             commit('setState', result);
             commit('setIsLoading', false);
+        },
+        saveOnboarding({ commit }) {
+            commit('setShowOnboarding', false);
+            VKC.send('VKWebAppStorageSet', { key: 'onboarded', value: '1' });
         },
     },
 });
