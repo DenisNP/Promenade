@@ -21,7 +21,7 @@
             <div class="MainButton" @click="stop">
                 <img src="@/assets/cross.svg">
             </div>
-            <div class="SubButtonLeft" @click="find">
+            <div class="SubButtonLeft" @click="tryFind">
                 <img src="@/assets/reload.svg">
             </div>
         </div>
@@ -67,7 +67,8 @@ export default {
             'stop',
         ]),
         async tryFind() {
-            await this.find();
+            const allowed = await this.find();
+            if (!allowed) return;
             this.$nextTick(() => {
                 if (!this.$store.state.poi) {
                     const toast = this.$f7.toast.create({
@@ -77,6 +78,8 @@ export default {
                         closeTimeout: 3500,
                     });
                     toast.open();
+                } else {
+                    VKC.bridge().send('VKWebAppTapticNotificationOccurred', { type: 'success' });
                 }
             });
         },

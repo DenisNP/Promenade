@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import VKC from '@denisnp/vkui-connect-helper';
 
 export default {
     components: {},
@@ -51,6 +52,11 @@ export default {
     computed: {
         range() {
             return this.$store.state.range;
+        },
+    },
+    watch: {
+        range() {
+            VKC.bridge().send('VKWebAppTapticSelectionChanged', {});
         },
     },
 };

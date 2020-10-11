@@ -118,7 +118,7 @@ export default new Vuex.Store({
         async find({ commit, state }) {
             const rangeId = ranges.findIndex((r) => r === state.range);
             const [geo] = await VKC.send('VKWebAppGetGeodata');
-            if (!geo) return;
+            if (!geo) return false;
             commit('setIsLoading', true);
             const result = await api('find', {
                 lat: geo.lat,
@@ -127,6 +127,7 @@ export default new Vuex.Store({
             });
             commit('setIsLoading', false);
             commit('setState', result);
+            return true;
         },
         async stop({ commit }) {
             commit('setIsLoading', true);
