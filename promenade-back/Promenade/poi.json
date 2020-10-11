@@ -656,11 +656,6 @@
       },
       {
         "key": "man_made",
-        "value": "mineshaft",
-        "name": "шахта"
-      },
-      {
-        "key": "man_made",
         "value": "adit",
         "name": "штольня"
       }
