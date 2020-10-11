@@ -12,10 +12,10 @@ namespace Promenade.Services
     public class GeoService
     {
         private const int SavedToRawRatio = 10;
-        private readonly double[] _rangeDistances = {0.1, 0.67, 1, 2};
+        private readonly double[] _rangeDistances = {0.15, 0.67, 1, 2};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
-        private const double NearDistance = 0.05;
+        private const double NearDistance = 0.06;
         private const double CompareTolerance = 0.00001;
         
         private readonly IDbService _dbService;

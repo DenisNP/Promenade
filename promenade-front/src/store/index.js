@@ -20,7 +20,7 @@ export default new Vuex.Store({
         },
         isNearPoi: false,
         settingsOpened: false,
-        range: 10,
+        range: 15,
         isLoading: false,
         userName: 'Я',
     },
@@ -55,7 +55,7 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        async start({ commit, dispatch }) {
+        async start({ state, commit, dispatch }) {
             VKC.init({
                 appId: getAppId(),
                 accessToken: getPlatform() === 'local' ? process.env.VUE_APP_VK_DEV_TOKEN : '',
@@ -71,7 +71,7 @@ export default new Vuex.Store({
 
             await dispatch('init');
             // TODO show onboarding
-            dispatch('move');
+            if (state.user) dispatch('move');
 
             // store user name
             const [userData] = await VKC.send('VKWebAppGetUserInfo');
@@ -114,8 +114,10 @@ export default new Vuex.Store({
             commit('setState', result);
         },
         async stop({ commit }) {
+            commit('setIsLoading', true);
             const result = await api('stop');
             commit('setState', result);
+            commit('setIsLoading', false);
         },
     },
 });

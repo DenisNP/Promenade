@@ -1,6 +1,7 @@
 <template>
-    <f7-page>
+    <f7-page class="my-page">
         <div id="mapContainer" ref="mapCont"/>
+<!--        <div class="main-title">Promenade</div>-->
         <MapControls/>
     </f7-page>
 </template>
@@ -28,7 +29,7 @@ export default {
         interval: 0,
         accessToken: process.env.VUE_APP_MAPBOX_TOKEN,
         mapOptions: {
-            style: 'mapbox://styles/mapbox/light-v10',
+            style: 'mapbox://styles/wooferclaw/ckg4xu31c00s019qumnmemqi2',
             center: [30.315, 59.939],
             zoom: 12,
             container: 'mapContainer',
@@ -51,6 +52,9 @@ export default {
         coordsHash() {
             return `${this.coordinates.lat}_${this.coordinates.lng}`;
         },
+        userName() {
+            return this.$store.state.userName;
+        },
     },
     watch: {
         route() {
@@ -66,6 +70,9 @@ export default {
             this.getPoi();
         },
         coordsHash() {
+            this.getMyPosition();
+        },
+        userName() {
             this.getMyPosition();
         },
     },
@@ -153,6 +160,8 @@ export default {
             this.poiMarker = new mapboxgl.Marker(node);
             this.poiMarker.setLngLat([this.poi.coordinates.lng, this.poi.coordinates.lat])
                 .addTo(this.map);
+
+            this.flyToMe();
         },
         getMyPosition() {
             if (this.myMarker != null) this.myMarker.remove();
@@ -168,6 +177,19 @@ export default {
             this.myMarker = new mapboxgl.Marker(node);
             this.myMarker.setLngLat([this.coordinates.lng, this.coordinates.lat])
                 .addTo(this.map);
+
+            this.flyToMe();
+        },
+        flyToMe() {
+            // if need move map
+            const bounds = this.map.getBounds();
+            const me = new mapboxgl.LngLat(this.coordinates.lng, this.coordinates.lat);
+            if (!bounds.contains(me)) {
+                this.map.flyTo({
+                    center: me,
+                    zoom: 12,
+                });
+            }
         },
         checkIfMove() {
             if (!this.poi || !this.$store.getters.hasCoordinates) return;
@@ -293,4 +315,23 @@ export default {
     text-align: center;
 }
 
+.main-title {
+    position: absolute;
+    top: calc(6px + env(safe-area-inset-top));
+    padding-left: 10px;
+    height: 40px;
+    width: 150px;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: rgba(0,0,0, 0.05);
+    color: black;
+    border-radius: 0 10px 10px 0;
+}
+
+.my-page .page-content {
+    padding-top: 0!important;
+}
 </style>

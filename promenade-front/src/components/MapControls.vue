@@ -1,7 +1,7 @@
 <template>
     <div class="MapControls">
         <div class="MapControlsGroup" v-if="buttonMode === 'start'">
-            <div class="MainButton" @click="find()">
+            <div class="MainButton" @click="tryFind">
                 <img src="@/assets/run-person.svg">
             </div>
             <div class="SubButtonLeft"
@@ -11,20 +11,26 @@
             <RoundSelector/>
         </div>
 
+        <div class="MapControlsGroup" v-if="buttonMode === 'loading'">
+            <div class="MainButton">
+                <div class="loader-2 center"><span></span></div>
+            </div>
+        </div>
+
         <div class="MapControlsGroup" v-if="buttonMode === 'clear'">
-            <div class="MainButton" @click="stop()">
+            <div class="MainButton" @click="stop">
                 <img src="@/assets/cross.svg">
             </div>
-            <div class="SubButtonLeft" @click="find()">
+            <div class="SubButtonLeft" @click="find">
                 <img src="@/assets/reload.svg">
             </div>
         </div>
 
         <div class="MapControlsGroup" v-if="buttonMode === 'finish'">
-            <div class="MainButton" @click="stop()">
+            <div class="MainButton" @click="finish">
                 <img src="@/assets/check.svg">
             </div>
-            <div class="SubButtonLeft" @click="goToStories()">
+            <div class="SubButtonLeft" @click="goToStories">
                 <img src="@/assets/story.svg">
             </div>
         </div>
@@ -32,6 +38,7 @@
 </template>
 
 <script>
+import VKC from '@denisnp/vkui-connect-helper';
 import { mapActions } from 'vuex';
 import RoundSelector from './RoundSelector.vue';
 
@@ -59,6 +66,36 @@ export default {
             'find',
             'stop',
         ]),
+        async tryFind() {
+            await this.find();
+            this.$nextTick(() => {
+                if (!this.$store.state.poi) {
+                    const toast = this.$f7.toast.create({
+                        text: 'Ничего не найдено. Попробуйте выбрать больше категорий или расширить зону.',
+                        position: 'center',
+                        cssClass: 'my-text-center',
+                        closeTimeout: 3500,
+                    });
+                    toast.open();
+                }
+            });
+        },
+        async finish() {
+            const wasNear = this.$store.state.isNearPoi;
+            await this.stop();
+            if (wasNear) {
+                const toast = this.$f7.toast.create({
+                    text: 'Точка была сохранена, как посещённая.',
+                    position: 'center',
+                    cssClass: 'my-text-center',
+                    closeTimeout: 2000,
+                });
+                toast.open();
+            }
+        },
+        goToStories() {
+            VKC.send('VKWebAppShowStoryBox', { background_type: 'none' });
+        },
     },
 };
 
@@ -73,6 +110,7 @@ export default {
     width: 100%;
     height: 100%;
     pointer-events: none;
+    z-index: 3;
 }
 .MapControls * {
     pointer-events: all;
@@ -80,14 +118,14 @@ export default {
 
 .MainButton {
     position: absolute;
-    bottom: 50px;
+    bottom: calc(50px + env(safe-area-inset-bottom));
     left: 50%;
     margin: 0 -50px;
     pointer-events: all;
     height: 110px;
     width: 110px;
     background-color: #ffffff;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     border-radius: 50%;
     display: flex;
     align-items: center; /*высота*/

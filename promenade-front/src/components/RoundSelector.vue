@@ -28,12 +28,12 @@ export default {
                 {
                     key: 15,
                     name: '15 мин',
-                    style: 'margin-left: 74px',
+                    style: 'margin-left: 74px; margin-bottom: 11px;',
                 },
                 {
                     key: 30,
                     name: '30 мин',
-                    style: 'margin-left: 74px',
+                    style: 'margin-left: 74px; margin-top: 11px;',
                 },
                 {
                     key: 2,
@@ -61,6 +61,7 @@ export default {
     position: absolute;
     bottom: 60px;
     left: 50%;
+    transform: translateY(3px);
 }
 
 .selectorItem {

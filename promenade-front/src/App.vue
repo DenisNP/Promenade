@@ -62,4 +62,8 @@ body {
     --f7-navbar-height: 52px;
     --f7-list-margin-vertical: 0;
 }
+
+.my-text-center {
+    text-align: center;
+}
 </style>
