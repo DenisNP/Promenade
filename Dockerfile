@@ -2,6 +2,8 @@
 FROM node:12 as BUILD_CLIENT
 COPY ./promenade-front /app
 WORKDIR /app
+ARG VUE_APP_MAPBOX_TOKEN=token_unknown
+ENV VUE_APP_MAPBOX_TOKEN ${VUE_APP_MAPBOX_TOKEN}
 RUN npm install
 RUN npm run build
 
