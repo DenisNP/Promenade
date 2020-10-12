@@ -145,7 +145,7 @@ body {
 }
 
 .ob-btn {
-    margin-bottom: calc(50px + 1px * env(safe-area-inset-bottom, 0));
+    margin-bottom: 60px;
 }
 
 .swiper-pagination-bullet {
@@ -153,6 +153,6 @@ body {
 }
 
 .swiper-pagination-bullets {
-    bottom: calc(10px + 1px * env(safe-area-inset-bottom, 0))!important;
+    bottom: 20px;
 }
 </style>
