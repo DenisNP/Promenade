@@ -126,12 +126,14 @@ body {
 .ob-pic-1 {
     background-image: url("assets/onb_00000.jpg");
     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .ob-pic-2 {
     background-image: url("assets/onb_00001.jpg");
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     background-repeat: no-repeat;
 }
 
