@@ -129,6 +129,7 @@ body {
 .ob-pic-2 {
     background-image: url("assets/onb_00001.jpg");
     background-size: cover;
+    background-position: center;
 }
 
 .ob-text {
