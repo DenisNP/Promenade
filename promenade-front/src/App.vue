@@ -112,6 +112,8 @@ body {
 
 .onboarding-slide {
     width: 100vw;
+    max-width: 100vw;
+    overflow: hidden;
     height: 100vh;
     background: white;
     position: relative;
@@ -129,7 +131,8 @@ body {
 .ob-pic-2 {
     background-image: url("assets/onb_00001.jpg");
     background-size: cover;
-    background-position: center;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 .ob-text {
@@ -145,5 +148,9 @@ body {
 
 .swiper-pagination-bullet {
     background: white;
+}
+
+.swiper-pagination-bullets {
+    bottom: calc(10px + 1px * env(safe-area-inset-botom, 0))!important;
 }
 </style>
