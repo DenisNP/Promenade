@@ -214,6 +214,11 @@
         "name": "кратер от бомбы"
       },
       {
+        "key": "memorial",
+        "value": "war_memorial",
+        "name": "мемориал"
+      },
+      {
         "key": "historic",
         "value": "memorial",
         "name": "мемориал"
@@ -431,6 +436,11 @@
         "key": "historic",
         "value": "monument",
         "name": "монумент"
+      },
+      {
+        "key": "memorial",
+        "value": "statue",
+        "name": "памятник"
       }
     ],
     "defaultEnabled": false
