@@ -194,7 +194,7 @@ export default {
             }
         },
         checkIfMove() {
-            if (!this.poi || !this.$store.getters.hasCoordinates) return;
+            if (!this.$store.getters.hasCoordinates) return;
             this.$store.dispatch('move');
         },
         drawInitialMap() {

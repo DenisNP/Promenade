@@ -38,7 +38,7 @@ namespace Promenade.Models
 
     public class SavedPoi
     {
-        private const int VisitedToSkipRatio = 10;
+        private const int VisitedToSkipRatio = 100;
         
         public int Number { get; set; }
         public bool Visited { get; set; }

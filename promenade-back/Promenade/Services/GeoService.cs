@@ -11,7 +11,9 @@ namespace Promenade.Services
 {
     public class GeoService
     {
-        private const int SavedToRawRatio = 10;
+        private const int SavedToRawRatio = 5;
+        private const int CategoryDuplicateRatio = 10;
+        private const int TagDuplicateRatio = 20;
         private readonly double[] _rangeDistances = {0.15, 0.67, 1, 2};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
@@ -74,6 +76,48 @@ namespace Promenade.Services
             // set coordinates
             state.Coordinates = new GeoPoint(lat, lng);
             
+            // get pois from cache or from Overpass
+            List<Poi> pois;
+            if (state.CachedResult != null && state.CachedResult.IsEqual(state.Coordinates, rangeId))
+            {
+                pois = state.CachedResult.Pois;
+            }
+            else
+            {
+                pois = QueryPois(rangeId, state);
+                state.CachedResult = new CachedResult
+                {
+                    Coordinates = state.Coordinates,
+                    RangeId = rangeId,
+                    Pois = pois
+                };
+            }
+            
+            // choose poi
+            var distance = _rangeDistances[rangeId];
+            var poi = ChoosePoi(state.Coordinates, distance, pois, state.User, state.LastCategoriesFound, state.LastTagsFound);
+
+            if (poi == null)
+            {
+                state.Poi = null;
+                state.Route = null;
+            }
+            else
+            {
+                var mapbox = new Mapbox();
+                var route = mapbox.Walk(state.Coordinates, poi.Coordinates);
+                
+                state.Poi = poi;
+                state.Route = route;
+            }
+
+            SetIsNear(state);
+            SaveState(state);
+            return state;
+        }
+
+        private List<Poi> QueryPois(int rangeId, State state)
+        {
             // create overpass object and add clauses
             var overpass = new Overpass();
             var tags = _contentService.GetTagsForCategories(
@@ -87,7 +131,7 @@ namespace Promenade.Services
             }
             
             // generate bounding box
-            var center = new GeoPoint(lat, lng);
+            var center = state.Coordinates;
             if (rangeId < 0 || rangeId > _rangeDistances.Length - 1)
                 throw new ArgumentOutOfRangeException(nameof(rangeId), $"RangeId should be from 0 to {_rangeDistances.Length - 1}");
 
@@ -97,44 +141,48 @@ namespace Promenade.Services
             
             // get points
             var pois = overpass.Execute(topLeft, bottomRight);
-            var poi = ChoosePoi(center, distance, pois, state.User);
+            pois.ForEach(p => _contentService.FillEmptyData(p));
 
-            if (poi == null)
-            {
-                state.Poi = null;
-                state.Route = null;
-            }
-            else
-            {
-                var mapbox = new Mapbox();
-                var route = mapbox.Walk(center, poi.Coordinates);
-                
-                state.Poi = poi;
-                state.Route = route;
-
-                _contentService.FillEmptyData(state.Poi);
-            }
-
-            SetIsNear(state);
-            SaveState(state);
-            return state;
+            return pois;
         }
 
-        private Poi ChoosePoi(GeoPoint center, double distance, List<Poi> pois, User user)
+        private Poi ChoosePoi(
+            GeoPoint center,
+            double distance,
+            List<Poi> pois,
+            User user,
+            List<IdFoundRecord> lastCategories,
+            List<IdFoundRecord> lastTags
+        )
         {
             if (pois.Count == 0) return null;
-            double GetThreshold(GeoPoint p, string poiId)
+            
+            // store categories and tagsweights
+            var catWeights = ConvertToWeights(lastCategories);
+            var tagWeights = ConvertToWeights(lastTags);
+            
+            double GetThreshold(Poi p)
             {
-                var actualDist = GeoUtils.Distance(p, center);
+                var actualDist = GeoUtils.Distance(p.Coordinates, center);
                 var diff = actualDist - distance;
                 var coeff = diff > 0 ? FurtherToCloserRatio : 1.0;
                 var rawValue = coeff * Math.Sqrt(Math.Abs(diff));
-                var savedValue = user.SavedPoiScore(poiId);
+                var savedValue = user.SavedPoiScore(p.Id);
+                var categoryDuplicateValue = catWeights.ContainsKey(p.CategoryId) ? catWeights[p.CategoryId] : 0;
+                var tagDuplicateValue = tagWeights.ContainsKey(p.FullTagId) ? tagWeights[p.FullTagId] : 0;
 
-                return rawValue + SavedToRawRatio * savedValue;
+                return rawValue
+                       + SavedToRawRatio * savedValue
+                       + CategoryDuplicateRatio * categoryDuplicateValue
+                       + TagDuplicateRatio * tagDuplicateValue;
             }
 
-            return pois.MinBy(p => GetThreshold(p.Coordinates, p.Id));
+            return pois.MinBy(GetThreshold);
+        }
+
+        private Dictionary<int, int> ConvertToWeights(List<IdFoundRecord> list)
+        {
+            return list.ToDictionary(x => x.Id, y => y.Order);
         }
         
         public State Move(string userId, double lat, double lng)
@@ -168,8 +216,12 @@ namespace Promenade.Services
                 state.User.VisitPoi(state.Poi.Id, state.Poi.CategoryId, state.IsNearPoi);
 
                 // update db
-                _dbService.UpdateAsync(state.User);
+                _dbService.Update(state.User);
                 
+                // reorder list by time
+                state.LastCategoriesFound = WriteRecord(state.LastCategoriesFound, state.Poi.CategoryId);
+                state.LastTagsFound = WriteRecord(state.LastTagsFound, state.Poi.FullTagId);
+
                 // clear point
                 state.Poi = null;
                 state.Route = null;
@@ -179,6 +231,25 @@ namespace Promenade.Services
             }
                 
             return state;
+        }
+
+        private List<IdFoundRecord> WriteRecord(List<IdFoundRecord> records, int newId)
+        {
+            var record = records.FirstOrDefault(c => c.Id == newId);
+            if (record == null)
+            {
+                record = new IdFoundRecord() {Id = newId};
+                records.Add(record);
+            }
+            record.Time = DateTime.UtcNow;
+
+            var newList = records.OrderBy(r => r.Time).ToList();
+            for (var i = 0; i < newList.Count; i++)
+            {
+                newList[i].Order = i + 1;
+            }
+
+            return newList;
         }
 
         public State SetSettings(string userId, SettingsDto settings)
@@ -197,6 +268,9 @@ namespace Promenade.Services
             // check if there is any category enabled
             if (!state.User.Categories.Any(c => c.Enabled)) 
                 state.User.Categories[0].Enabled = true; // enable first
+            
+            // clear cache
+            state.CachedResult = null;
 
             // save state and user data
             _dbService.UpdateAsync(state.User);

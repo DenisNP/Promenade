@@ -41,6 +41,11 @@ namespace Promenade.Services
                 .ToArray();
         }
 
+        public int[] GetAllIds()
+        {
+            return _categories.Keys.ToArray();
+        }
+
         public CategoryForUser[] GenerateInitial()
         {
             return _categories
@@ -50,29 +55,31 @@ namespace Promenade.Services
 
         public void FillEmptyData(Poi poi)
         {
-            var catId = GetCategoryId(poi, out var tagName);
+            var (catId, subId) = GetCategoryId(poi, out var tagName);
             poi.CategoryId = catId;
+            poi.FullTagId = catId * 100 + subId;
 
             if (catId >= 0 && string.IsNullOrEmpty(poi.Description))
                 poi.Description = tagName;
         }
 
-        private int GetCategoryId(Poi poi, out string tagName)
+        private (int categoryId, int subcategoryId) GetCategoryId(Poi poi, out string tagName)
         {
             foreach (var category in _categories.Values)
             {
-                foreach (var tagData in category.Tags)
+                for (var i = 0; i < category.Tags.Length; i++)
                 {
+                    var tagData = category.Tags[i];
                     if (poi.Tags.Any(t => t.Key == tagData.Key && t.Value == tagData.Value))
                     {
                         tagName = tagData.Name.UppercaseFirst();
-                        return category.Id;
+                        return (category.Id, i);
                     }
                 }
             }
 
             tagName = "";
-            return -1;
+            return (-1, -1);
         }
     }
 }
