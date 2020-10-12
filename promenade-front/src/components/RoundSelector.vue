@@ -29,12 +29,12 @@ export default {
                 {
                     key: 15,
                     name: '15 мин',
-                    style: 'margin-left: 74px; margin-bottom: 11px;',
+                    style: 'margin-left: 74px; margin-bottom: 9px;',
                 },
                 {
                     key: 30,
                     name: '30 мин',
-                    style: 'margin-left: 74px; margin-top: 11px;',
+                    style: 'margin-left: 74px; margin-top: 9px;',
                 },
                 {
                     key: 2,
@@ -65,13 +65,13 @@ export default {
 <style>
 .roundSelector {
     position: absolute;
-    bottom: calc(60px + env(safe-area-inset-bottom));
+    bottom: calc(54px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateY(3px);
 }
 
 .selectorItem {
-    margin: 7px 0 0;
+    margin: 3px 0 0;
     display: flex;
     align-items: center;
     background: transparent;
@@ -79,8 +79,8 @@ export default {
 
 .selectorIcon {
     pointer-events: all;
-    height: 18px;
-    width: 18px;
+    height: 23px;
+    width: 23px;
     background-color: rgba(0, 49, 104, 0.2);;
     border-radius: 50%;
 }
@@ -88,7 +88,7 @@ export default {
 .selectorText {
     font-style: normal;
     font-weight: normal;
-    font-size: 10px;
+    font-size: 12px;
     line-height: 16px;
     text-align: right;
     color: rgba(0, 49, 104, 0.2);
