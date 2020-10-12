@@ -153,6 +153,6 @@ body {
 }
 
 .swiper-pagination-bullets {
-    bottom: 20px;
+    bottom: 20px!important;
 }
 </style>
