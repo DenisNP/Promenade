@@ -122,12 +122,12 @@ body {
 }
 
 .ob-pic-1 {
-    /*background-image: url("");*/
+    background-image: url("assets/onb_00000.jpg");
     background-size: cover;
 }
 
 .ob-pic-2 {
-    /*background-image: url("");*/
+    background-image: url("assets/onb_00001.jpg");
     background-size: cover;
 }
 
@@ -135,9 +135,14 @@ body {
     text-align: center;
     margin-bottom: 20px;
     padding: 0 20px;
+    color: white;
 }
 
 .ob-btn {
     margin-bottom: calc(50px + 1px * env(safe-area-inset-botom, 0));
+}
+
+.swiper-pagination-bullet {
+    background: white;
 }
 </style>
