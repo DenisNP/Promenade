@@ -112,7 +112,7 @@ export default new Vuex.Store({
                 [geo.lat, geo.long],
                 [state.coordinates.lat, state.coordinates.lng],
             );
-            if (dist < 0.01) return;
+            if (dist < 0.001) return;
             const result = await api('move', { lat: geo.lat, lng: geo.long });
             commit('setState', result);
         },

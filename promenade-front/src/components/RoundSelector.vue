@@ -15,6 +15,7 @@
 
 <script>
 import VKC from '@denisnp/vkui-connect-helper';
+import { ranges } from '@/utils';
 
 export default {
     components: {},
@@ -22,23 +23,23 @@ export default {
         return {
             items: [
                 {
-                    key: 10,
-                    name: '10 мин',
+                    key: ranges[0],
+                    name: '5 мин',
                     style: 'margin-left: 60px',
                 },
                 {
-                    key: 15,
-                    name: '15 мин',
+                    key: ranges[1],
+                    name: '10 мин',
                     style: 'margin-left: 74px; margin-bottom: 9px;',
                 },
                 {
-                    key: 30,
-                    name: '30 мин',
+                    key: ranges[2],
+                    name: '15 мин',
                     style: 'margin-left: 74px; margin-top: 9px;',
                 },
                 {
-                    key: 2,
-                    name: 'Рядом',
+                    key: ranges[3],
+                    name: '30 мин',
                     style: 'margin-left: 60px',
                 },
             ],
@@ -99,7 +100,7 @@ export default {
 
 .selectorItem.active .selectorIcon {
     background: #4BB34B;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .selectorItem.active .selectorText {

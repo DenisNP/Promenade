@@ -71,6 +71,7 @@ export default {
         },
         coordsHash() {
             this.getMyPosition();
+            this.getIsochrone();
         },
         userName() {
             this.getMyPosition();
@@ -203,7 +204,7 @@ export default {
             this.getPoi();
             this.getMyPosition();
             clearInterval(this.interval);
-            this.interval = setInterval(this.checkIfMove, 5000);
+            this.interval = setInterval(this.checkIfMove, 2500);
         },
     },
     mounted() {
