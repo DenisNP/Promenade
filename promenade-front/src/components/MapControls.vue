@@ -114,6 +114,8 @@ export default {
     height: 100%;
     pointer-events: none;
     z-index: 3;
+    transform: translate3d(0,0,0);
+    overflow: visible;
 }
 .MapControls * {
     pointer-events: all;
