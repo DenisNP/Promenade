@@ -33,7 +33,8 @@ namespace Promenade.Models
                     Number = 1,
                     Visited = visited,
                     CategoryId = poi.CategoryId,
-                    Coordinates = poi.Coordinates
+                    Coordinates = poi.Coordinates,
+                    Description = poi.Description
                 });
             }
         }
@@ -46,6 +47,7 @@ namespace Promenade.Models
         public int Number { get; set; }
         public bool Visited { get; set; }
         public int CategoryId { get; set; }
+        public string Description { get; set; }
         public GeoPoint Coordinates { get; set; }
 
         public int GetScore()
