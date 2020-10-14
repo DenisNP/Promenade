@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Promenade.Geo;
+using Promenade.Geo.Models;
 using Promenade.Models.Abstract;
 
 namespace Promenade.Models
@@ -17,20 +19,21 @@ namespace Promenade.Models
             return PoiSaved.ContainsKey(poiId) ? PoiSaved[poiId].GetScore() : 0;
         }
 
-        public void VisitPoi(string poiId, int categoryId, bool visited)
+        public void VisitPoi(Poi poi, bool visited)
         {
-            if (PoiSaved.ContainsKey(poiId))
+            if (PoiSaved.ContainsKey(poi.Id))
             {
-                PoiSaved[poiId].Number++;
-                PoiSaved[poiId].Visited = PoiSaved[poiId].Visited || visited;
+                PoiSaved[poi.Id].Number++;
+                PoiSaved[poi.Id].Visited = PoiSaved[poi.Id].Visited || visited;
             }
             else
             {
-                PoiSaved.Add(poiId, new SavedPoi
+                PoiSaved.Add(poi.Id, new SavedPoi
                 {
                     Number = 1,
                     Visited = visited,
-                    CategoryId = categoryId
+                    CategoryId = poi.CategoryId,
+                    Coordinates = poi.Coordinates
                 });
             }
         }
@@ -43,6 +46,7 @@ namespace Promenade.Models
         public int Number { get; set; }
         public bool Visited { get; set; }
         public int CategoryId { get; set; }
+        public GeoPoint Coordinates { get; set; }
 
         public int GetScore()
         {

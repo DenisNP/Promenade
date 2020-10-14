@@ -45,6 +45,9 @@ export default new Vuex.Store({
             state.coordinates = result.coordinates;
             state.isNearPoi = result.isNearPoi;
         },
+        setCoordinates(state, coordinates) {
+            state.coordinates = coordinates;
+        },
         setRange(state, key) {
             state.range = key;
         },

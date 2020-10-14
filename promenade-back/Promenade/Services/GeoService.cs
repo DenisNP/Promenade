@@ -213,7 +213,7 @@ namespace Promenade.Services
             if (state.Poi != null)
             {
                 // update user data
-                state.User.VisitPoi(state.Poi.Id, state.Poi.CategoryId, state.IsNearPoi);
+                state.User.VisitPoi(state.Poi, state.IsNearPoi);
 
                 // update db
                 _dbService.Update(state.User);

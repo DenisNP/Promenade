@@ -21,7 +21,7 @@
             <div class="MainButton" @click="stop">
                 <img src="@/assets/cross.svg">
             </div>
-            <div class="SubButtonLeft" @click="tryFind">
+            <div class="SubButtonLeft" @click="refreshPosition">
                 <img src="@/assets/reload.svg">
             </div>
         </div>
@@ -96,6 +96,10 @@ export default {
                 toast.open();
             }
         },
+        refreshPosition() {
+            this.$store.commit('setCoordinates', { lat: 0, lng: 0 });
+            this.$store.dispatch('move');
+        },
         goToStories() {
             VKC.send('VKWebAppShowStoryBox', { background_type: 'none' });
         },
@@ -113,7 +117,7 @@ export default {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 3;
+    z-index: 6;
     transform: translate3d(0,0,0);
     overflow: visible;
 }
@@ -135,7 +139,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    z-index: 4;
 }
 
 .SubButtonLeft {
@@ -152,7 +156,7 @@ export default {
     align-items: center; /*высота*/
     justify-content: center; /*ширина*/
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-    z-index: 2;
+    z-index: 5;
     overflow: visible;
 }
 

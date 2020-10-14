@@ -109,7 +109,11 @@ export default {
                 this.map.removeLayer('route');
                 this.map.removeSource('route');
             }
-            if (!this.mapLoaded || this.route == null) return;
+            if (
+                !this.mapLoaded
+                || this.route == null
+                || !this.$store.getters.hasCoordinates
+            ) return;
 
             const coordArray = this.route.points.map((item) => [item.lng, item.lat]);
 
@@ -204,7 +208,7 @@ export default {
             this.getPoi();
             this.getMyPosition();
             clearInterval(this.interval);
-            this.interval = setInterval(this.checkIfMove, 2500);
+            this.interval = setInterval(this.checkIfMove, 5000);
         },
     },
     mounted() {
@@ -329,6 +333,7 @@ export default {
     font-weight: 700;
     color: white;
     text-align: center;
+    z-index: 3;
 }
 
 .main-title {
