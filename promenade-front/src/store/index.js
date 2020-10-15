@@ -73,7 +73,7 @@ export default new Vuex.Store({
             // set bar color
             VKC.bridge().send(
                 'VKWebAppSetViewSettings',
-                { status_bar_style: 'dark', action_bar_color: '#5a3fc0' },
+                { status_bar_style: 'dark', action_bar_color: '#e7eff9' },
             );
 
             // onboarded

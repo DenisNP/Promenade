@@ -39,7 +39,6 @@ export default {
     data() {
         return {
             f7params: {
-                theme: 'ios',
                 name: 'Название',
                 id: 'id',
                 routes: [
@@ -92,7 +91,7 @@ body {
     --f7-theme-color-rgb: 63, 138, 224;
     --f7-theme-color-shade: #2275d4;
     --f7-theme-color-tint: #629fe6;
-    --f7-navbar-height: 52px;
+    --f7-navbar-height: 52px!important;
     --f7-list-margin-vertical: 0;
 }
 
@@ -106,7 +105,7 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
-    background: white;
+    background: linear-gradient(0deg, rgba(10,14,23,1) 0%, rgba(29,59,97,1) 100%);
     z-index: 5001;
 }
 
@@ -115,7 +114,6 @@ body {
     max-width: 100vw;
     overflow: hidden;
     height: 100vh;
-    background: white;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -154,5 +152,9 @@ body {
 
 .swiper-pagination-bullets {
     bottom: 20px!important;
+}
+
+.mapboxgl-ctrl {
+    margin-bottom: calc(10px + env(safe-area-inset-bottom) / 2)!important;
 }
 </style>

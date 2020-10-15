@@ -24,6 +24,7 @@ export default {
         center: [30.315, 59.939],
         zoom: 12,
         mapLoaded: false,
+        firstCoordsSet: false,
         poiMarker: null,
         myMarker: null,
         interval: 0,
@@ -50,6 +51,7 @@ export default {
             return this.poi === null ? -1 : this.poi.id;
         },
         coordsHash() {
+            if (!this.$store.getters.hasCoordinates) return 'empty';
             return `${this.coordinates.lat}_${this.coordinates.lng}`;
         },
         userName() {
@@ -69,8 +71,8 @@ export default {
         poiId() {
             this.getPoi();
         },
-        coordsHash() {
-            this.getMyPosition();
+        coordsHash(newH, oldH) {
+            this.getMyPosition(oldH === 'empty');
             this.getIsochrone();
         },
         userName() {
@@ -170,7 +172,7 @@ export default {
 
             this.flyToMe();
         },
-        getMyPosition() {
+        getMyPosition(forceFly) {
             if (this.myMarker != null) this.myMarker.remove();
             if (!this.$store.getters.hasCoordinates) return;
 
@@ -181,22 +183,30 @@ export default {
                     ${this.$store.state.userName[0].toUpperCase()}
                 </div>`;
 
+            // node.addEventListener('touchend', () => { this.forceMove();});
+
             this.myMarker = new mapboxgl.Marker(node);
             this.myMarker.setLngLat([this.coordinates.lng, this.coordinates.lat])
                 .addTo(this.map);
 
-            this.flyToMe();
+            this.flyToMe(forceFly);
         },
-        flyToMe() {
+        flyToMe(forceFly) {
             // if need move map
             const bounds = this.map.getBounds();
             const me = new mapboxgl.LngLat(this.coordinates.lng, this.coordinates.lat);
-            if (!bounds.contains(me)) {
+            if (!bounds.contains(me) || forceFly) {
                 this.map.flyTo({
                     center: me,
                     zoom: 12,
+                    animate: this.firstCoordsSet,
                 });
             }
+            this.firstCoordsSet = true;
+        },
+        forceMove() {
+            this.$store.commit('setCoordinates', { lat: 0, lng: 0 });
+            this.$store.dispatch('move');
         },
         checkIfMove() {
             if (!this.$store.getters.hasCoordinates) return;
@@ -256,6 +266,10 @@ export default {
                     'line-width': 1.5,
                 },
             }, 'poi-label');
+
+            this.map.on('click', () => {
+                this.forceMove();
+            });
         });
     },
 
@@ -326,13 +340,16 @@ export default {
 .my-position {
     background: #3F8AE0;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     font-size: 12px;
     font-weight: 700;
     color: white;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 3;
 }
 

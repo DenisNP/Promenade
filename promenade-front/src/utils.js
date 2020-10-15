@@ -25,6 +25,12 @@ export const getHash = () => {
     return hash ? hash.slice(1) : '';
 };
 
+export const firstUpperCase = (s) => {
+    if (!s) return s;
+    if (s.length === 1) return s.toUpperCase;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
 export const drawImage = (imageSrc, x, y, w, h) => new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';

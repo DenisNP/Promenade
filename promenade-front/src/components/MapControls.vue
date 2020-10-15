@@ -21,7 +21,7 @@
             <div class="MainButton" @click="stop">
                 <img src="@/assets/cross.svg">
             </div>
-            <div class="SubButtonLeft" @click="refreshPosition">
+            <div class="SubButtonLeft" @click="tryFind">
                 <img src="@/assets/reload.svg">
             </div>
         </div>
@@ -95,10 +95,6 @@ export default {
                 });
                 toast.open();
             }
-        },
-        refreshPosition() {
-            this.$store.commit('setCoordinates', { lat: 0, lng: 0 });
-            this.$store.dispatch('move');
         },
         goToStories() {
             VKC.send('VKWebAppShowStoryBox', { background_type: 'none' });
