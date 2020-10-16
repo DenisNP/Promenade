@@ -58,6 +58,17 @@ export default {
     mounted() {
         this.$store.dispatch('start');
     },
+    computed: {
+        geoDisabled() {
+            return this.$store.state.geoDisabled;
+        },
+        geoDenied() {
+            return this.$store.state.geoDenied;
+        },
+        networkDisabled() {
+            return this.$store.state.networkDisabled;
+        },
+    },
     methods: {
         slideNext() {
             const sw = this.$f7.swiper.get();
@@ -66,6 +77,38 @@ export default {
         start() {
             this.$store.dispatch('saveOnboarding');
             this.$store.dispatch('move');
+        },
+    },
+    watch: {
+        geoDisabled(d) {
+            if (d) {
+                this.$f7.dialog.alert(
+                    'Включите геолокацию на телефоне и дайте приложению VK разрешение на получение геопозиции',
+                    'Геолокация отключена',
+                );
+            }
+        },
+        networkDisabled(d) {
+            if (d) {
+                const toast = this.$f7.toast.create({
+                    text: 'Нет доступа к сети, попробуйте позже.',
+                    position: 'center',
+                    cssClass: 'my-text-center',
+                    closeTimeout: 2000,
+                });
+                toast.open();
+            }
+        },
+        geoDenied(d) {
+            if (d) {
+                const toast = this.$f7.toast.create({
+                    text: 'Для работы приложения нужен доступ к геопозиции.',
+                    position: 'center',
+                    cssClass: 'my-text-center',
+                    closeTimeout: 2500,
+                });
+                toast.open();
+            }
         },
     },
 };
@@ -155,6 +198,7 @@ body {
 }
 
 .mapboxgl-ctrl {
+    /*noinspection CssInvalidFunction*/
     margin-bottom: calc(10px + env(safe-area-inset-bottom) / 2)!important;
 }
 </style>

@@ -28,6 +28,8 @@ export default {
         poiMarker: null,
         myMarker: null,
         interval: 0,
+        clickedOnce: false,
+        clickTimeout: 0,
         accessToken: process.env.VUE_APP_MAPBOX_TOKEN,
         mapOptions: {
             style: 'mapbox://styles/wooferclaw/ckg4xu31c00s019qumnmemqi2',
@@ -183,7 +185,7 @@ export default {
                     ${this.$store.state.userName[0].toUpperCase()}
                 </div>`;
 
-            // node.addEventListener('touchend', () => { this.forceMove();});
+            node.addEventListener('touchend', () => { this.forceMove(); });
 
             this.myMarker = new mapboxgl.Marker(node);
             this.myMarker.setLngLat([this.coordinates.lng, this.coordinates.lat])
@@ -198,7 +200,7 @@ export default {
             if (!bounds.contains(me) || forceFly) {
                 this.map.flyTo({
                     center: me,
-                    zoom: 12,
+                    zoom: Math.max(12, this.map.getZoom()),
                     animate: this.firstCoordsSet,
                 });
             }
@@ -266,10 +268,6 @@ export default {
                     'line-width': 1.5,
                 },
             }, 'poi-label');
-
-            this.map.on('click', () => {
-                this.forceMove();
-            });
         });
     },
 
@@ -355,6 +353,7 @@ export default {
 
 .main-title {
     position: absolute;
+    /*noinspection CssInvalidFunction*/
     top: calc(6px + env(safe-area-inset-top));
     padding-left: 10px;
     height: 40px;

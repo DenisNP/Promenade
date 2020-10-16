@@ -6,7 +6,6 @@ import {
 } from '../utils';
 import api from './api';
 
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -24,6 +23,9 @@ export default new Vuex.Store({
         isLoading: false,
         userName: 'Я',
         showOnboarding: false,
+        geoDisabled: false,
+        geoDenied: false,
+        networkDisabled: false,
     },
     getters: {
         hasCoordinates(state) {
@@ -59,6 +61,15 @@ export default new Vuex.Store({
         },
         setShowOnboarding(state, onb) {
             state.showOnboarding = onb;
+        },
+        setGeoDisabled(state, d) {
+            state.geoDisabled = d;
+        },
+        setGeoDenied(state, d) {
+            state.geoDenied = d;
+        },
+        setNetworkDisabled(state, d) {
+            state.networkDisabled = d;
         },
     },
     actions: {
@@ -100,42 +111,69 @@ export default new Vuex.Store({
                 if (userName) commit('setUserName', userName);
             }
         },
-        async saveSettings({ commit }, data) {
-            const result = await api('settings', data);
+        async api({ commit }, { method, data }) {
+            const result = await api(method, data || {});
+            if (!result) {
+                commit('setNetworkDisabled', true);
+                return null;
+            }
+            commit('setNetworkDisabled', false);
+            return result;
+        },
+        async saveSettings({ commit, dispatch }, data) {
+            const result = await dispatch('api', { method: 'settings', data });
             commit('setState', result);
         },
-        async init({ commit }) {
-            const result = await api('init');
+        async init({ commit, dispatch }) {
+            const result = await dispatch('api', { method: 'init' });
             commit('setState', result);
         },
-        async move({ state, commit }) {
-            const [geo] = await VKC.send('VKWebAppGetGeodata');
+        async move({ state, commit, dispatch }) {
+            const geo = await dispatch('getGeo');
             if (!geo) return;
             const dist = geoDistance(
                 [geo.lat, geo.long],
                 [state.coordinates.lat, state.coordinates.lng],
             );
             if (dist < 0.001) return;
-            const result = await api('move', { lat: geo.lat, lng: geo.long });
+            const result = await dispatch('api', { method: 'move', data: { lat: geo.lat, lng: geo.long } });
             commit('setState', result);
         },
-        async find({ commit, state }) {
+        async find({ commit, state, dispatch }) {
             const rangeId = ranges.findIndex((r) => r === state.range);
-            const [geo] = await VKC.send('VKWebAppGetGeodata');
+            const geo = await dispatch('getGeo');
             if (!geo) return false;
             commit('setIsLoading', true);
-            const result = await api('find', {
-                lat: geo.lat,
-                lng: geo.long,
-                rangeId,
+            const result = await dispatch('api', {
+                method: 'find',
+                data: {
+                    lat: geo.lat,
+                    lng: geo.long,
+                    rangeId,
+                },
             });
             commit('setIsLoading', false);
             commit('setState', result);
             return true;
         },
-        async stop({ commit }) {
+        async getGeo({ commit }) {
+            const [geo] = await VKC.send('VKWebAppGetGeodata');
+            if (!geo) {
+                commit('setGeoDenied', true);
+                return null;
+            }
+            commit('setGeoDenied', false);
+            if (geo && !geo.available) {
+                commit('setCoordinates', { lat: 0, lng: 0 });
+                commit('setGeoDisabled', true);
+                return null;
+            }
+            commit('setGeoDisabled', false);
+            return geo;
+        },
+        async stop({ commit, dispatch }) {
             commit('setIsLoading', true);
-            const result = await api('stop');
+            const result = await dispatch('api', { method: 'stop' });
             commit('setState', result);
             commit('setIsLoading', false);
         },
