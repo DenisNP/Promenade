@@ -159,6 +159,7 @@ export default new Vuex.Store({
         async getGeo({ commit }) {
             const [geo] = await VKC.send('VKWebAppGetGeodata');
             if (!geo) {
+                commit('setCoordinates', { lat: 0, lng: 0 });
                 commit('setGeoDenied', true);
                 return null;
             }

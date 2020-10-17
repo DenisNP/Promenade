@@ -70,7 +70,12 @@ export default {
             const allowed = await this.find();
             if (!allowed) return;
             this.$nextTick(() => {
-                if (!this.$store.state.poi) {
+                if (
+                    !this.$store.state.poi
+                    && !this.$store.state.geoDenied
+                    && !this.$store.state.geoDisabled
+                    && !this.$store.state.networkDisabled
+                ) {
                     const toast = this.$f7.toast.create({
                         text: 'Ничего не найдено. Попробуйте выбрать больше категорий или расширить зону.',
                         position: 'center',
@@ -78,6 +83,7 @@ export default {
                         closeTimeout: 3500,
                     });
                     toast.open();
+                    VKC.bridge().send('VKWebAppTapticNotificationOccurred', { type: 'error' });
                 } else {
                     VKC.bridge().send('VKWebAppTapticNotificationOccurred', { type: 'success' });
                 }
@@ -123,6 +129,7 @@ export default {
 
 .MainButton {
     position: absolute;
+    /*noinspection CssInvalidFunction*/
     bottom: calc(50px + env(safe-area-inset-bottom));
     left: 50%;
     margin: 0 -50px;
@@ -140,6 +147,7 @@ export default {
 
 .SubButtonLeft {
     position: absolute;
+    /*noinspection CssInvalidFunction*/
     bottom: calc(50px + env(safe-area-inset-bottom));
     left: 50%;
     margin: 0 0 0 -65px;
