@@ -95,7 +95,6 @@ export default new Vuex.Store({
             if (onb && onb.keys) {
                 if (!onb.keys.some((k) => k.key === 'onboarded' && k.value)) {
                     commit('setShowOnboarding', true);
-                    console.log(111);
                 }
             }
 
@@ -113,11 +112,11 @@ export default new Vuex.Store({
         },
         async api({ commit }, { method, data }) {
             const result = await api(method, data || {});
+            commit('setNetworkDisabled', false);
             if (!result) {
                 commit('setNetworkDisabled', true);
                 return null;
             }
-            commit('setNetworkDisabled', false);
             return result;
         },
         async saveSettings({ commit, dispatch }, data) {
@@ -157,19 +156,19 @@ export default new Vuex.Store({
             return true;
         },
         async getGeo({ commit }) {
+            commit('setGeoDisabled', false);
+            commit('setGeoDenied', false);
             const [geo] = await VKC.send('VKWebAppGetGeodata');
             if (!geo) {
                 commit('setCoordinates', { lat: 0, lng: 0 });
                 commit('setGeoDenied', true);
                 return null;
             }
-            commit('setGeoDenied', false);
             if (geo && !geo.available) {
                 commit('setCoordinates', { lat: 0, lng: 0 });
                 commit('setGeoDisabled', true);
                 return null;
             }
-            commit('setGeoDisabled', false);
             return geo;
         },
         async stop({ commit, dispatch }) {
