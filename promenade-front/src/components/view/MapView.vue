@@ -211,7 +211,12 @@ export default {
             this.$store.dispatch('move');
         },
         checkIfMove() {
-            if (!this.$store.getters.hasCoordinates) return;
+            if (
+                !this.$store.getters.hasCoordinates
+                || !this.$store.state.networkDisabled
+                || !this.$store.state.geoDisabled
+                || !this.$store.state.geoDenied
+            ) return;
             this.$store.dispatch('move');
         },
         drawInitialMap() {
