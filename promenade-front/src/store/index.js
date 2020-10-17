@@ -111,8 +111,8 @@ export default new Vuex.Store({
             }
         },
         async api({ commit }, { method, data }) {
-            const result = await api(method, data || {});
             commit('setNetworkDisabled', false);
+            const result = await api(method, data || {});
             if (!result) {
                 commit('setNetworkDisabled', true);
                 return null;
@@ -156,8 +156,8 @@ export default new Vuex.Store({
             return true;
         },
         async getGeo({ commit }) {
-            commit('setGeoDisabled', false);
             commit('setGeoDenied', false);
+            commit('setGeoDisabled', false);
             const [geo] = await VKC.send('VKWebAppGetGeodata');
             if (!geo) {
                 commit('setCoordinates', { lat: 0, lng: 0 });
