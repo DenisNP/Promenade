@@ -65,7 +65,7 @@ export const getNumericPhrase = (num, one, few, many) => {
     return postfix;
 };
 
-export const ranges = [5, 10, 15, 30];
+export const ranges = [10, 15, 30, 60];
 
 function deg2rad(deg) {
     return deg * (Math.PI / 180.0);

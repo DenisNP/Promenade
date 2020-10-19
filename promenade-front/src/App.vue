@@ -136,6 +136,8 @@ body {
     --f7-theme-color-tint: #629fe6;
     --f7-navbar-height: 52px!important;
     --f7-list-margin-vertical: 0;
+    --f7-sheet-border-color: transparent!important;
+    --f7-list-border-color: transparent!important;
 }
 
 .my-text-center {

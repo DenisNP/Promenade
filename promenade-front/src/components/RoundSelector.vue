@@ -24,22 +24,22 @@ export default {
             items: [
                 {
                     key: ranges[0],
-                    name: '5 мин',
+                    name: '10 мин',
                     style: 'margin-left: 60px',
                 },
                 {
                     key: ranges[1],
-                    name: '10 мин',
+                    name: '15 мин',
                     style: 'margin-left: 74px; margin-bottom: 9px;',
                 },
                 {
                     key: ranges[2],
-                    name: '15 мин',
+                    name: '30 мин',
                     style: 'margin-left: 74px; margin-top: 9px;',
                 },
                 {
                     key: ranges[3],
-                    name: '30 мин',
+                    name: '60 мин',
                     style: 'margin-left: 60px',
                 },
             ],
