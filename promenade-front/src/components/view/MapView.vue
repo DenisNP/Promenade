@@ -37,6 +37,7 @@ import { mapState } from 'vuex';
 import mapboxgl from 'mapbox-gl';
 import MapControls from '../MapControls.vue';
 import { firstUpperCase } from '../../utils';
+import translateTag from '../../translateTag';
 
 const MapboxLanguage = require('@mapbox/mapbox-gl-language');
 
@@ -102,7 +103,7 @@ export default {
             tags.unshift({ key: 'Координаты', value: `${this.poi.coordinates.lat}, ${this.poi.coordinates.lng}`, isCoords: true });
             tags.unshift({ key: 'Категория', value: this.category.name });
             return tags.map((t) => ({
-                key: firstUpperCase(t.key),
+                key: firstUpperCase(translateTag(t.key)),
                 value: firstUpperCase(t.value),
                 isCoords: t.isCoords,
             }));
@@ -460,6 +461,7 @@ export default {
 
 .empty-block {
     width: 100%;
+    /*noinspection CssInvalidFunction*/
     height: calc(40px + env(safe-area-inset-top));
 }
 
