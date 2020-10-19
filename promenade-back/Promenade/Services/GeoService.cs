@@ -14,7 +14,7 @@ namespace Promenade.Services
         private const int SavedToRawRatio = 5;
         private const int CategoryDuplicateRatio = 10;
         private const int TagDuplicateRatio = 20;
-        private readonly double[] _rangeDistances = {0.33, 0.67, 1, 2};
+        private readonly double[] _rangeDistances = {0.67, 1, 2, 4};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
         private const double NearDistance = 0.06;

@@ -17,8 +17,9 @@ export default new Vuex.Store({
             lat: 0.0,
             lng: 0.0,
         },
+        visited: [],
         isNearPoi: false,
-        settingsOpened: false,
+        currentPoiInfo: null,
         range: 15,
         isLoading: false,
         userName: 'Я',
@@ -46,6 +47,7 @@ export default new Vuex.Store({
             state.route = result.route;
             state.coordinates = result.coordinates;
             state.isNearPoi = result.isNearPoi;
+            state.visited = result.visited;
         },
         setCoordinates(state, coordinates) {
             state.coordinates = coordinates;
@@ -70,6 +72,9 @@ export default new Vuex.Store({
         },
         setNetworkDisabled(state, d) {
             state.networkDisabled = d;
+        },
+        setCurrentPoiInfo(state, pInfo) {
+            state.currentPoiInfo = pInfo;
         },
     },
     actions: {

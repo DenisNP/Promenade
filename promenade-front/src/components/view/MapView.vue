@@ -3,19 +3,18 @@
         <div id="mapContainer" ref="mapCont"/>
 <!--        <div class="main-title">Promenade</div>-->
         <MapControls/>
-        <f7-sheet class="demo-sheet" swipe-to-close
-         :opened="sheetOpened" @sheet:closed="closeSheet">
+        <f7-sheet class="my-sheet" swipe-to-close :backdrop="false"
+         :opened="!!$store.state.currentPoiInfo" @sheet:closed="closeSheet">
             <div class="title-block">
                 Информация
-                <font-awesome-icon class="close-icon" icon="times-circle" @click="closeSheet"/>
+                <font-awesome-icon class="close-icon" icon="times" @click="closeSheet"/>
             </div>
-        <!-- Scrollable sheet content -->
             <f7-page-content>
-                <f7-list v-if="poi" media-list>
+                <f7-list v-if="!!$store.state.currentPoiInfo" media-list>
                     <f7-list-item
                         v-for="tag in tags"
                         :key="tag.key"
-                        :link="tag.isCoords ? `https://yandex.ru/maps/?pt=${poi.coordinates.lng},${poi.coordinates.lat}&z=12&l=map` : null"
+                        :link="tag.isCoords ? `https://yandex.ru/maps/?pt=${$store.state.currentPoiInfo.coordinates.lng},${$store.state.currentPoiInfo.coordinates.lat}&z=12&l=map` : null"
                         target="_blank"
                         external
                     >
@@ -53,6 +52,8 @@ export default {
         firstCoordsSet: false,
         poiMarker: null,
         myMarker: null,
+        visitedMarkers: [],
+        bigIcons: false,
         interval: 0,
         clickedOnce: false,
         clickTimeout: 0,
@@ -63,7 +64,6 @@ export default {
             zoom: 12,
             container: 'mapContainer',
         },
-        sheetOpened: false,
     }),
     computed: {
         ...mapState({
@@ -96,17 +96,23 @@ export default {
             return this.$store.getters.getCategory(this.poi.categoryId);
         },
         tags() {
-            if (this.poi == null) {
-                return [];
+            const poi = this.$store.state.currentPoiInfo;
+            if (!poi) return [];
+            const category = this.$store.getters.getCategory(poi.categoryId);
+            const tags = poi.tags.filter(this.filterTags);
+            tags.unshift({ key: 'Координаты', value: `${poi.coordinates.lat}, ${poi.coordinates.lng}`, isCoords: true });
+            tags.unshift({ key: 'Категория', value: category.name });
+            if (!tags.some((t) => t.value.toLowerCase() === poi.description.toLowerCase())) {
+                tags.unshift({ key: 'Название', value: poi.description });
             }
-            const tags = this.poi.tags.filter(this.filterTags);
-            tags.unshift({ key: 'Координаты', value: `${this.poi.coordinates.lat}, ${this.poi.coordinates.lng}`, isCoords: true });
-            tags.unshift({ key: 'Категория', value: this.category.name });
             return tags.map((t) => ({
                 key: firstUpperCase(translateTag(t.key)),
                 value: firstUpperCase(t.value),
                 isCoords: t.isCoords,
             }));
+        },
+        visited() {
+            return this.$store.state.visited;
         },
     },
     watch: {
@@ -128,6 +134,13 @@ export default {
         },
         userName() {
             this.getMyPosition();
+        },
+        visited() {
+            this.getVisited();
+        },
+        bigIcons(b) {
+            if (b) this.$$('.visited-poi').removeClass('vp-small');
+            else this.$$('.visited-poi').addClass('vp-small');
         },
     },
     methods: {
@@ -230,6 +243,7 @@ export default {
 
             // draw marker with my position
             const node = document.createElement('div');
+            node.className = 'my-position-container';
             node.innerHTML = `
                 <div class="my-position">
                     ${firstUpperCase(this.$store.state.userName)[0]}
@@ -242,6 +256,30 @@ export default {
                 .addTo(this.map);
 
             this.flyToMe(forceFly);
+        },
+        getVisited() {
+            if (!this.map || !this.mapLoaded) return;
+            this.visitedMarkers.forEach((v) => v.remove());
+            this.visitedMarkers = [];
+
+            this.visited.forEach((p) => {
+                const category = this.$store.getters.getCategory(p.categoryId);
+                const node = document.createElement('div');
+                node.className = 'visited-poi-container';
+                node.innerHTML = `
+                    <div class="visited-poi${this.bigIcons ? '' : ' vp-small'}">
+                        <i class="fas fa-${category.icon} icon"></i>
+                    </div>`;
+
+                node.addEventListener('touchend', () => {
+                    this.$store.commit('setCurrentPoiInfo', p);
+                });
+
+                const m = new mapboxgl.Marker(node);
+                m.setLngLat([p.coordinates.lng, p.coordinates.lat]).addTo(this.map);
+
+                this.visitedMarkers.push(m);
+            });
         },
         flyToMe(forceFly) {
             // if need move map
@@ -274,22 +312,21 @@ export default {
             this.getRoute();
             this.getPoi();
             this.getMyPosition();
+            this.getVisited();
             clearInterval(this.interval);
             this.interval = setInterval(this.checkIfMove, 5000);
         },
         openSheet() {
-            this.sheetOpened = true;
-            // this.map.on('click', this.closeSheet);
+            this.$store.commit('setCurrentPoiInfo', this.poi);
         },
         closeSheet() {
-            this.sheetOpened = false;
-            // this.map.off('click', this.closeSheet);
+            this.$store.commit('setCurrentPoiInfo', null);
         },
         filterTags(tag) {
             const cyrillicPattern = /[а-яА-ЯЁё]/;
             const latinPattern = /[a-zA-Z]/;
 
-            return cyrillicPattern.test(tag.vale) || !latinPattern.test(tag.value);
+            return cyrillicPattern.test(tag.value) || !latinPattern.test(tag.value);
         },
     },
     mounted() {
@@ -337,6 +374,11 @@ export default {
                     'line-width': 1.5,
                 },
             }, 'poi-label');
+
+            this.map.on('zoom', () => {
+                const z = this.map.getZoom();
+                this.bigIcons = z > 12;
+            });
         });
     },
 
@@ -404,6 +446,10 @@ export default {
     height: 90px;
 }
 
+.my-position-container {
+    z-index: 2;
+}
+
 .my-position {
     background: #3F8AE0;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
@@ -417,7 +463,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 3;
 }
 
 .main-title {
@@ -454,9 +499,9 @@ export default {
 }
 
 .close-icon {
-    opacity: 0.3;
+    opacity: 0.15;
     position: absolute;
-    right: 10px;
+    right: 14px;
 }
 
 .empty-block {
@@ -469,9 +514,22 @@ export default {
     color: black;
 }
 
+.visited-poi {
+    font-size: 20px;
+    color: #4BB34B;
+}
+
+.vp-small {
+    font-size: 13px!important;
+    color: black!important;
+    opacity: 0.3;
+}
 
 .custom-list-item-header {
     color: var(--f7-list-item-text-text-color);
 }
 
+.my-sheet {
+    border-radius: 20px 20px 0 0;
+}
 </style>
