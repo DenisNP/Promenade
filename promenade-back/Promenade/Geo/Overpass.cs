@@ -180,7 +180,6 @@ namespace Promenade.Geo
         public string Description { get; set; }
         public int CategoryId { get; set; }
         public int FullTagId { get; set; }
-        [JsonIgnore]
         public KeyValuePair<string, string>[] Tags { get; set; }
         public GeoPoint Coordinates { get; set; }
     }

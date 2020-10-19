@@ -3,6 +3,30 @@
         <div id="mapContainer" ref="mapCont"/>
 <!--        <div class="main-title">Promenade</div>-->
         <MapControls/>
+        <f7-sheet class="demo-sheet" swipe-to-close
+         :opened="sheetOpened" @sheet:closed="closeSheet">
+            <div class="title-block">
+                Информация
+                <font-awesome-icon class="close-icon" icon="times-circle" @click="closeSheet"/>
+            </div>
+        <!-- Scrollable sheet content -->
+            <f7-page-content>
+                <f7-list v-if="poi" media-list>
+                    <f7-list-item
+                        v-for="tag in tags"
+                        :key="tag.key"
+                        :link="tag.isCoords ? `https://yandex.ru/maps/?pt=${poi.coordinates.lng},${poi.coordinates.lat}&z=12&l=map` : null"
+                        target="_blank"
+                        external
+                    >
+                    <div slot="header" class="custom-list-item-header">{{tag.key}}</div>
+                    <div slot="text" class="custom-list-item-text">{{tag.value}}</div>
+                    </f7-list-item>
+                </f7-list>
+                <div class="empty-block"/>
+            </f7-page-content>
+        </f7-sheet>
+
     </f7-page>
 </template>
 
@@ -12,6 +36,7 @@ import { mapState } from 'vuex';
 
 import mapboxgl from 'mapbox-gl';
 import MapControls from '../MapControls.vue';
+import { firstUpperCase } from '../../utils';
 
 const MapboxLanguage = require('@mapbox/mapbox-gl-language');
 
@@ -37,6 +62,7 @@ export default {
             zoom: 12,
             container: 'mapContainer',
         },
+        sheetOpened: false,
     }),
     computed: {
         ...mapState({
@@ -58,6 +84,28 @@ export default {
         },
         userName() {
             return this.$store.state.userName;
+        },
+        category() {
+            if (this.poi == null) {
+                return {
+                    name: '',
+                    icon: '',
+                };
+            }
+            return this.$store.getters.getCategory(this.poi.categoryId);
+        },
+        tags() {
+            if (this.poi == null) {
+                return [];
+            }
+            const tags = this.poi.tags.filter(this.filterTags);
+            tags.unshift({ key: 'Координаты', value: `${this.poi.coordinates.lat}, ${this.poi.coordinates.lng}`, isCoords: true });
+            tags.unshift({ key: 'Категория', value: this.category.name });
+            return tags.map((t) => ({
+                key: firstUpperCase(t.key),
+                value: firstUpperCase(t.value),
+                isCoords: t.isCoords,
+            }));
         },
     },
     watch: {
@@ -157,16 +205,17 @@ export default {
             if (this.poi === null) return;
 
             // draw new poi
-            const category = this.$store.getters.getCategory(this.poi.categoryId);
             const node = document.createElement('div');
             node.className = 'flag-container';
             node.innerHTML = `
                 <div class="flag">
                     <div class="title">${this.poi.description}</div>
                     <div class="category">
-                        <i class="fas fa-${category.icon} icon"></i>${category.name}
+                        <i class="fas fa-${this.category.icon} icon"></i>${this.category.name}
                     </div>
                 </div>`;
+
+            node.addEventListener('touchend', () => { this.openSheet(); });
 
             this.poiMarker = new mapboxgl.Marker(node);
             this.poiMarker.setLngLat([this.poi.coordinates.lng, this.poi.coordinates.lat])
@@ -182,7 +231,7 @@ export default {
             const node = document.createElement('div');
             node.innerHTML = `
                 <div class="my-position">
-                    ${this.$store.state.userName[0].toUpperCase()}
+                    ${firstUpperCase(this.$store.state.userName)[0]}
                 </div>`;
 
             node.addEventListener('touchend', () => { this.forceMove(); });
@@ -226,6 +275,20 @@ export default {
             this.getMyPosition();
             clearInterval(this.interval);
             this.interval = setInterval(this.checkIfMove, 5000);
+        },
+        openSheet() {
+            this.sheetOpened = true;
+            // this.map.on('click', this.closeSheet);
+        },
+        closeSheet() {
+            this.sheetOpened = false;
+            // this.map.off('click', this.closeSheet);
+        },
+        filterTags(tag) {
+            const cyrillicPattern = /[а-яА-ЯЁё]/;
+            const latinPattern = /[a-zA-Z]/;
+
+            return cyrillicPattern.test(tag.vale) || !latinPattern.test(tag.value);
         },
     },
     mounted() {
@@ -376,4 +439,37 @@ export default {
 .my-page .page-content {
     padding-top: 0!important;
 }
+
+.title-block {
+    text-align: center;
+    font-size: 18px;
+    color: black;
+    font-weight: 600;
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-icon {
+    opacity: 0.3;
+    position: absolute;
+    right: 10px;
+}
+
+.empty-block {
+    width: 100%;
+    height: calc(40px + env(safe-area-inset-top));
+}
+
+.custom-list-item-text {
+    color: black;
+}
+
+
+.custom-list-item-header {
+    color: var(--f7-list-item-text-text-color);
+}
+
 </style>

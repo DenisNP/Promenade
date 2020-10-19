@@ -27,7 +27,7 @@ export const getHash = () => {
 
 export const firstUpperCase = (s) => {
     if (!s) return s;
-    if (s.length === 1) return s.toUpperCase;
+    if (s.length === 1) return s.toUpperCase();
     return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
