@@ -55,14 +55,18 @@ namespace Promenade.Services
         {
             if (!_memoryCache.TryGetValue(userId, out State state))
             {
+                var user = LoadUser(userId);
                 state = new State
                 {
-                    User = LoadUser(userId),
+                    User = user,
                     Coordinates = new GeoPoint(),
                     IsNearPoi = false,
                     Poi = null,
-                    Route = null
+                    Route = null,
+                    Visited = user.GetVisitedAsPoi()
                 };
+                
+                SaveState(state);
             }
 
             return state;
@@ -157,6 +161,9 @@ namespace Promenade.Services
         {
             if (pois.Count == 0) return null;
             
+            // filter poi by visited
+            pois = pois.Where(p => !user.PoiSaved.ContainsKey(p.Id) || !user.PoiSaved[p.Id].Visited).ToList();
+            
             // store categories and tagsweights
             var catWeights = ConvertToWeights(lastCategories);
             var tagWeights = ConvertToWeights(lastTags);
@@ -214,6 +221,7 @@ namespace Promenade.Services
             {
                 // update user data
                 state.User.VisitPoi(state.Poi, state.IsNearPoi);
+                if (state.IsNearPoi) state.Visited = state.User.GetVisitedAsPoi();
 
                 // update db
                 _dbService.Update(state.User);

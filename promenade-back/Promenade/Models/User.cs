@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Promenade.Geo;
 using Promenade.Geo.Models;
@@ -30,25 +31,42 @@ namespace Promenade.Models
             {
                 PoiSaved.Add(poi.Id, new SavedPoi
                 {
+                    Id = poi.Id,
                     Number = 1,
                     Visited = visited,
                     CategoryId = poi.CategoryId,
+                    FullTagId = poi.FullTagId,
                     Coordinates = poi.Coordinates,
-                    Description = poi.Description
+                    Description = poi.Description,
+                    Tags = poi.Tags,
                 });
             }
         }
+
+        public Poi[] GetVisitedAsPoi()
+        {
+            return PoiSaved.Values
+                .Where(p => p.Visited)
+                .Select(p => new Poi
+                    {
+                        Id = p.Id,
+                        CategoryId = p.CategoryId,
+                        FullTagId = p.FullTagId,
+                        Coordinates = p.Coordinates,
+                        Description = p.Description,
+                        Tags = p.Tags,
+                    }
+                )
+                .ToArray();
+        }
     }
 
-    public class SavedPoi
+    public class SavedPoi : Poi
     {
         private const int VisitedToSkipRatio = 100;
         
         public int Number { get; set; }
         public bool Visited { get; set; }
-        public int CategoryId { get; set; }
-        public string Description { get; set; }
-        public GeoPoint Coordinates { get; set; }
 
         public int GetScore()
         {
