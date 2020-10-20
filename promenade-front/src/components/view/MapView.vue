@@ -337,10 +337,13 @@ export default {
             this.interval = setInterval(this.checkIfMove, 5000);
         },
         openSheet() {
+            if (!this.$store.state.currentPoiInfo) {
+                window.history.pushState('sheet', null);
+            }
             this.$store.commit('setCurrentPoiInfo', this.poi);
         },
         closeSheet() {
-            this.$store.commit('setCurrentPoiInfo', null);
+            window.history.back();
         },
         filterTags(tag) {
             const cyrillicPattern = /[а-яА-ЯЁё]/;
