@@ -1,6 +1,6 @@
 const data = {
     'addr:street': 'улица',
-    'addr:city': 'город',
+    'addr:city': 'населённый пункт',
     'addr:housenumber': 'номер дома',
     name: 'название',
     'name:ru': 'название',
@@ -26,5 +26,5 @@ const data = {
 
 export default (tag) => {
     const t = tag.trim().toLowerCase();
-    return data[t] || tag;
+    return data[t] || 'прочее';
 };
