@@ -99,18 +99,26 @@ export default {
             const poi = this.$store.state.currentPoiInfo;
             if (!poi) return [];
             const category = this.$store.getters.getCategory(poi.categoryId);
-            const tags = poi.tags.filter(this.filterTags);
+            const tags = poi.tags
+                .filter(this.filterTags)
+                .map((t) => ({
+                    key: firstUpperCase(translateTag(t.key)),
+                    value: firstUpperCase(t.value),
+                    isWiki: t.key.includes('wikipedia'),
+                }));
+
             tags.unshift({ key: 'Координаты', value: `${poi.coordinates.lat}, ${poi.coordinates.lng}`, isCoords: true });
             tags.unshift({ key: 'Категория', value: category.name });
             if (!tags.some((t) => t.value.toLowerCase() === poi.description.toLowerCase())) {
                 tags.unshift({ key: 'Название', value: poi.description });
             }
-            return tags.map((t) => ({
-                key: firstUpperCase(translateTag(t.key)),
-                value: firstUpperCase(t.value),
-                isCoords: t.isCoords,
-                isWiki: t.key.includes('wikipedia'),
-            }));
+
+            const unknownTagValues = tags.filter((t) => !t.key).map((t) => t.value);
+            const filteredTags = tags.filter((t) => t.key);
+            if (unknownTagValues.length > 0) {
+                filteredTags.push({ key: 'Прочее', value: unknownTagValues.join('\n') });
+            }
+            return filteredTags;
         },
         visited() {
             return this.$store.state.visited;

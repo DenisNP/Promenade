@@ -26,5 +26,5 @@ const data = {
 
 export default (tag) => {
     const t = tag.trim().toLowerCase();
-    return data[t] || 'прочее';
+    return data[t];
 };
