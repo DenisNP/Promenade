@@ -14,7 +14,7 @@
                     <f7-list-item
                         v-for="tag in tags"
                         :key="tag.key"
-                        :link="tag.isCoords ? `https://yandex.ru/maps/?pt=${$store.state.currentPoiInfo.coordinates.lng},${$store.state.currentPoiInfo.coordinates.lat}&z=12&l=map` : null"
+                        :link="constructTagLink(tag)"
                         target="_blank"
                         external
                     >
@@ -109,6 +109,7 @@ export default {
                 key: firstUpperCase(translateTag(t.key)),
                 value: firstUpperCase(t.value),
                 isCoords: t.isCoords,
+                isWiki: t.key.includes('wikipedia'),
             }));
         },
         visited() {
@@ -298,6 +299,17 @@ export default {
             this.$store.commit('setCoordinates', { lat: 0, lng: 0 });
             this.$store.dispatch('move');
         },
+        constructTagLink(tag) {
+            const poi = this.$store.state.currentPoiInfo;
+            if (!poi) return null;
+            if (tag.isCoords) {
+                return `https://yandex.ru/maps/?pt=${poi.coordinates.lng},${poi.coordinates.lat}&z=12&l=map`;
+            }
+            if (tag.isWiki) {
+                return `https://wikipedia.org/wiki/${tag.value}`;
+            }
+            return null;
+        },
         checkIfMove() {
             if (
                 !this.$store.getters.hasCoordinates
@@ -447,7 +459,7 @@ export default {
 }
 
 .my-position-container {
-    z-index: 2;
+    /*z-index: 2;*/
 }
 
 .my-position {
@@ -507,7 +519,8 @@ export default {
 .empty-block {
     width: 100%;
     /*noinspection CssInvalidFunction*/
-    height: calc(40px + env(safe-area-inset-top));
+    /*height: calc(40px + env(safe-area-inset-top));*/
+    height: 40px;
 }
 
 .custom-list-item-text {

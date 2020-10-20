@@ -81,3 +81,12 @@ export const geoDistance = ([lon1, lat1], [lon2, lat2]) => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c; // Distance in km
 };
+
+export const shuffle = (a) => {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        // eslint-disable-next-line no-param-reassign
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+};

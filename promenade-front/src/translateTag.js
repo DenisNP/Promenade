@@ -5,7 +5,18 @@ const data = {
     title: 'название',
     description: 'описание',
     subject: 'описание',
+    wikipedia: 'статья на Википедии',
+    'subject:wikipedia': 'статья на Википедии',
+    height: 'высота',
+    ref: 'номер',
+    'ref:okn': 'номер',
+    layer: 'слой',
+    operator: 'оператор',
+    'building:levels': 'число уровней',
     inscription: 'информация',
+    artist_name: 'автор',
+    start_date: 'дата',
+    date: 'дата',
 };
 
 export default (tag) => {

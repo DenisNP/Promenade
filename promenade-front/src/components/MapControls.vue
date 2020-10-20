@@ -14,6 +14,7 @@
         <div class="MapControlsGroup" v-if="buttonMode === 'loading'">
             <div class="MainButton">
                 <div class="loader-2 center"><span></span></div>
+                <div class="loading-phrase">{{phrase}}</div>
             </div>
         </div>
 
@@ -41,15 +42,25 @@
 import VKC from '@denisnp/vkui-connect-helper';
 import { mapActions } from 'vuex';
 import RoundSelector from './RoundSelector.vue';
+import loadingPhrases from '../loadingPhrases';
+import { shuffle } from '../utils';
 
 export default {
     components: {
         RoundSelector,
     },
-    data: () => ({}),
+    data() {
+        return {
+            interval: 0,
+            phrase: '',
+        };
+    },
     computed: {
+        isLoading() {
+            return this.$store.state.isLoading;
+        },
         buttonMode() {
-            if (this.$store.state.isLoading) {
+            if (this.isLoading) {
                 return 'loading';
             }
             if (!this.$store.state.poi) {
@@ -59,6 +70,18 @@ export default {
                 return 'clear';
             }
             return 'finish';
+        },
+    },
+    watch: {
+        isLoading(l) {
+            clearInterval(this.interval);
+            if (l) {
+                this.interval = setInterval(this.nextPhrase, 2500);
+                shuffle(loadingPhrases);
+                this.nextPhrase();
+            } else {
+                this.phrase = '';
+            }
         },
     },
     methods: {
@@ -104,6 +127,11 @@ export default {
         },
         goToStories() {
             VKC.send('VKWebAppShowStoryBox', { background_type: 'none' });
+        },
+        nextPhrase() {
+            const p = loadingPhrases.shift();
+            this.phrase = p;
+            loadingPhrases.push(p);
         },
     },
 };
@@ -164,4 +192,14 @@ export default {
     overflow: visible;
 }
 
+.loading-phrase {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 11px;
+    width: 85px;
+    max-width: 85px;
+}
 </style>
