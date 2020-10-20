@@ -514,6 +514,7 @@ export default {
     opacity: 0.15;
     position: absolute;
     right: 14px;
+    font-size: 22px;
 }
 
 .empty-block {

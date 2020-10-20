@@ -114,6 +114,14 @@ export default new Vuex.Store({
                 userName = userName.trim();
                 if (userName) commit('setUserName', userName);
             }
+
+            // update on renew
+            VKC.subscribe((evt) => {
+                if (!evt.detail) return;
+                if (evt.detail.type === 'VKWebAppViewRestore') {
+                    if (state.user && !state.showOnboarding) dispatch('move');
+                }
+            });
         },
         async api({ commit }, { method, data }) {
             commit('setNetworkDisabled', false);
