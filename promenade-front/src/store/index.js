@@ -20,6 +20,7 @@ export default new Vuex.Store({
         visited: [],
         isNearPoi: false,
         currentPoiInfo: null,
+        currentWikiPointInfo: null,
         range: 15,
         isLoading: false,
         userName: 'Я',
@@ -27,6 +28,7 @@ export default new Vuex.Store({
         geoDisabled: false,
         geoDenied: false,
         networkDisabled: false,
+        wikiPoints: [],
     },
     getters: {
         hasCoordinates(state) {
@@ -48,6 +50,7 @@ export default new Vuex.Store({
             state.coordinates = result.coordinates;
             state.isNearPoi = result.isNearPoi;
             state.visited = result.visited;
+            state.wikiPoints = result.wikiPoints;
         },
         setCoordinates(state, coordinates) {
             state.coordinates = coordinates;
@@ -75,6 +78,9 @@ export default new Vuex.Store({
         },
         setCurrentPoiInfo(state, pInfo) {
             state.currentPoiInfo = pInfo;
+        },
+        setCurrentWikiPointInfo(state, wpInfo) {
+            state.currentWikiPointInfo = wpInfo;
         },
     },
     actions: {
@@ -193,6 +199,15 @@ export default new Vuex.Store({
         saveOnboarding({ commit }) {
             commit('setShowOnboarding', false);
             VKC.send('VKWebAppStorageSet', { key: 'onboarded', value: '1' });
+        },
+        async getWikiPointInfo({ commit, dispatch }, id) {
+            const result = await dispatch('api', {
+                method: 'wiki',
+                data: {
+                    id,
+                },
+            });
+            commit('setCurrentWikiPointInfo', result);
         },
     },
 });
