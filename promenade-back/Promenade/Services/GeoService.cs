@@ -14,12 +14,12 @@ namespace Promenade.Services
         private const int SavedToRawRatio = 5;
         private const int CategoryDuplicateRatio = 10;
         private const int TagDuplicateRatio = 20;
-        private readonly double[] _rangeDistances = { 0.67, 1, 2, 4 };
+        private readonly double[] _rangeDistances = {0.67, 1, 2, 4};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
         private const double NearDistance = 0.06;
         private const double CompareTolerance = 0.00001;
-
+        
         private readonly IDbService _dbService;
         private readonly ContentService _contentService;
         private readonly IMemoryCache _memoryCache;
@@ -30,7 +30,7 @@ namespace Promenade.Services
             _contentService = contentService;
             _memoryCache = memoryCache;
         }
-
+        
         private User LoadUser(string userId)
         {
             var user = _dbService.ById<User>(userId);
@@ -45,7 +45,7 @@ namespace Promenade.Services
             }
             else
             {
-
+                
             }
 
             return user;
@@ -65,27 +65,21 @@ namespace Promenade.Services
                     Route = null,
                     Visited = user.GetVisitedAsPoi()
                 };
-
+                
                 SaveState(state);
             }
 
             return state;
         }
 
-        public PlaceCard GetWiki(string id)
-        {
-            var wikimapia = new Wikimapia();
-            return wikimapia.GetPlace(id);
-        }
-
         public State Find(string userId, double lat, double lng, int rangeId)
         {
             var state = GetState(userId);
             if (state.Poi != null) Stop(userId, state, true);
-
+            
             // set coordinates
             state.Coordinates = new GeoPoint(lat, lng);
-
+            
             // get pois from cache or from Overpass
             List<Poi> pois;
             if (state.CachedResult != null && state.CachedResult.IsEqual(state.Coordinates, rangeId))
@@ -102,7 +96,7 @@ namespace Promenade.Services
                     Pois = pois
                 };
             }
-
+            
             // choose poi
             var distance = _rangeDistances[rangeId];
             var poi = ChoosePoi(state.Coordinates, distance, pois, state.User, state.LastCategoriesFound, state.LastTagsFound);
@@ -111,16 +105,14 @@ namespace Promenade.Services
             {
                 state.Poi = null;
                 state.Route = null;
-                state.WikiPoints = new WikiPoint[0];
             }
             else
             {
                 var mapbox = new Mapbox();
                 var route = mapbox.Walk(state.Coordinates, poi.Coordinates);
-
+                
                 state.Poi = poi;
                 state.Route = route;
-                state.WikiPoints = GetWikiPoints(poi,state.CachedResult.WikiPoints);
             }
 
             SetIsNear(state);
@@ -141,7 +133,7 @@ namespace Promenade.Services
             {
                 overpass = overpass.AddClause(Overpass.AllTypes, tag);
             }
-
+            
             // generate bounding box
             var center = state.Coordinates;
             if (rangeId < 0 || rangeId > _rangeDistances.Length - 1)
@@ -150,7 +142,7 @@ namespace Promenade.Services
             var distance = _rangeDistances[rangeId];
             var topLeft = GeoUtils.FindPointAtDistanceFrom(center, -Math.PI / 4, distance * RadiusToBoundRatio);
             var bottomRight = GeoUtils.FindPointAtDistanceFrom(center, 3 * Math.PI / 4, distance * RadiusToBoundRatio);
-
+            
             // get points
             var pois = overpass.Execute(topLeft, bottomRight);
             pois.ForEach(p => _contentService.FillEmptyData(p));
@@ -168,14 +160,14 @@ namespace Promenade.Services
         )
         {
             if (pois.Count == 0) return null;
-
+            
             // filter poi by visited
             pois = pois.Where(p => !user.PoiSaved.ContainsKey(p.Id) || !user.PoiSaved[p.Id].Visited).ToList();
-
+            
             // store categories and tagsweights
             var catWeights = ConvertToWeights(lastCategories);
             var tagWeights = ConvertToWeights(lastTags);
-
+            
             double GetThreshold(Poi p)
             {
                 var actualDist = GeoUtils.Distance(p.Coordinates, center);
@@ -199,14 +191,14 @@ namespace Promenade.Services
         {
             return list.ToDictionary(x => x.Id, y => y.Order);
         }
-
+        
         public State Move(string userId, double lat, double lng)
         {
             var state = GetState(userId);
             var changed = state.Coordinates == null
                           || Math.Abs(state.Coordinates.Lat - lat) > CompareTolerance
                           || Math.Abs(state.Coordinates.Lng - lng) > CompareTolerance;
-
+            
             state.Coordinates = new GeoPoint(lat, lng);
 
             if (state.Poi != null && changed)
@@ -216,12 +208,12 @@ namespace Promenade.Services
 
                 state.Route = route;
             }
-
+            
             SetIsNear(state);
             SaveState(state);
             return state;
         }
-
+        
         public State Stop(string userId, State state = null, bool disableSave = false)
         {
             state ??= GetState(userId);
@@ -233,7 +225,7 @@ namespace Promenade.Services
 
                 // update db
                 _dbService.Update(state.User);
-
+                
                 // reorder list by time
                 state.LastCategoriesFound = WriteRecord(state.LastCategoriesFound, state.Poi.CategoryId);
                 state.LastTagsFound = WriteRecord(state.LastTagsFound, state.Poi.FullTagId);
@@ -242,10 +234,10 @@ namespace Promenade.Services
                 state.Poi = null;
                 state.Route = null;
                 state.IsNearPoi = false;
-
+                
                 if (!disableSave) SaveState(state);
             }
-
+                
             return state;
         }
 
@@ -254,7 +246,7 @@ namespace Promenade.Services
             var record = records.FirstOrDefault(c => c.Id == newId);
             if (record == null)
             {
-                record = new IdFoundRecord() { Id = newId };
+                record = new IdFoundRecord() {Id = newId};
                 records.Add(record);
             }
             record.Time = DateTime.UtcNow;
@@ -271,7 +263,7 @@ namespace Promenade.Services
         public State SetSettings(string userId, SettingsDto settings)
         {
             var state = GetState(userId);
-
+            
             // set categories
             foreach (var categorySetting in settings.Categories)
             {
@@ -280,11 +272,11 @@ namespace Promenade.Services
 
                 category.Enabled = categorySetting.Enabled;
             }
-
+            
             // check if there is any category enabled
-            if (!state.User.Categories.Any(c => c.Enabled))
+            if (!state.User.Categories.Any(c => c.Enabled)) 
                 state.User.Categories[0].Enabled = true; // enable first
-
+            
             // clear cache
             state.CachedResult = null;
 
@@ -302,7 +294,7 @@ namespace Promenade.Services
                 state.IsNearPoi = false;
                 return;
             }
-
+            
             var dist = GeoUtils.Distance(state.Poi.Coordinates, state.Coordinates);
             state.IsNearPoi = dist <= NearDistance;
         }
@@ -310,30 +302,6 @@ namespace Promenade.Services
         private void SaveState(State state)
         {
             _memoryCache.Set(state.User.Id, state, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
-        }
-
-        private WikiPoint[] GetWikiPoints(Poi poi, Dictionary<string, WikiPoint[]> cache)
-        {
-            if (cache.ContainsKey(poi.Id)) 
-                return cache[poi.Id];
-
-            var wiki = new Wikimapia();
-            var places = wiki.GetAllPlaces(poi.Coordinates);
-
-            var wikiPoints = places == null 
-                ? new WikiPoint[] { } 
-                : places.Select(p => new WikiPoint {
-                    Id = p.Id.ToString(),
-                    Coordinates = new GeoPoint {
-                        Lat = p.Location.Lat, 
-                        Lng = p.Location.Lon 
-                    } 
-                })
-                .ToArray();
-
-            cache.Add(poi.Id, wikiPoints);
-
-            return wikiPoints;
         }
     }
 }

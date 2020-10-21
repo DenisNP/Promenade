@@ -14,20 +14,13 @@ namespace Promenade.Models
         public GeoPoint Coordinates { get; set; } = new GeoPoint();
         public bool IsNearPoi { get; set; }
         public Poi[] Visited { get; set; }
-        public WikiPoint[] WikiPoints { get; set; } = new WikiPoint[] { };
-
+        
         [JsonIgnore] 
         public List<IdFoundRecord> LastCategoriesFound { get; set; } = new List<IdFoundRecord>();
         [JsonIgnore]
         public List<IdFoundRecord> LastTagsFound { get; set; } = new List<IdFoundRecord>();
         [JsonIgnore] 
         public CachedResult CachedResult { get; set; }
-    }
-
-    public class WikiPoint
-    {
-        public string Id { get; set; }
-        public GeoPoint Coordinates { get; set; }
     }
 
     public class IdFoundRecord
@@ -44,8 +37,6 @@ namespace Promenade.Models
         public GeoPoint Coordinates { get; set; }
         public int RangeId { get; set; }
         public List<Poi> Pois { get; set; }
-
-        public Dictionary<string, WikiPoint[]> WikiPoints { get; set; } = new Dictionary<string, WikiPoint[]>();
 
         public bool IsEqual(GeoPoint coordinates, int rangeId)
         {
