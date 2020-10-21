@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Promenade.Geo;
+using Promenade.Geo.Models;
 using Promenade.Models;
 using Promenade.Models.Web.Request;
 using Promenade.Models.Web.Response;
@@ -62,7 +64,13 @@ namespace Promenade.Controllers
         {
             return HandleRequest<CoordinatesRequest, State>(r => _geoService.Move(r.UserId, r.Lat, r.Lng));
         }
-        
+
+        [HttpPost("/wiki")]
+        public Task Wiki()
+        {
+            return HandleRequest<WikiRequest, PlaceCard>(r => _geoService.GetWiki(r.Id));
+        }
+
         [HttpPost("/stop")]
         public Task Stop()
         {

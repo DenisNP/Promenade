@@ -81,5 +81,10 @@ namespace Promenade.Services
             tagName = "";
             return (-1, -1);
         }
+
+        public Category GetById(int id)
+        {
+            return _categories[id];
+        }
     }
 }
