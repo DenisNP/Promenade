@@ -57,6 +57,12 @@ export default {
     },
     mounted() {
         this.$store.dispatch('start');
+
+        window.addEventListener('popstate', () => {
+            if (this.$store.state.currentPoiInfo) {
+                this.$store.commit('setCurrentPoiInfo', null);
+            }
+        });
     },
     computed: {
         geoDisabled() {

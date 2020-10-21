@@ -1,6 +1,6 @@
 <template>
         <f7-page>
-            <f7-navbar title="Опции" back-link="" @click="close" />
+            <f7-navbar title="Категории" back-link="" @click="close" />
                 <f7-list >
                     <f7-list-item
                         v-for="item in user.categories"
