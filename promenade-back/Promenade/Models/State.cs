@@ -14,6 +14,7 @@ namespace Promenade.Models
         public GeoPoint Coordinates { get; set; } = new GeoPoint();
         public bool IsNearPoi { get; set; }
         public Poi[] Visited { get; set; }
+        public AchievementProgress[] Achievements { get; set; }
         
         [JsonIgnore] 
         public List<IdFoundRecord> LastCategoriesFound { get; set; } = new List<IdFoundRecord>();

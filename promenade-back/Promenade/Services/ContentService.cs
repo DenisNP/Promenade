@@ -13,6 +13,7 @@ namespace Promenade.Services
     {
         private readonly ILogger<ContentService> _logger;
         private Dictionary<int, Category> _categories;
+        private Achievement[] _achievements;
 
         public ContentService(ILogger<ContentService> logger)
         {
@@ -28,6 +29,14 @@ namespace Promenade.Services
 
             _logger.LogInformation(
                 $"Categories loaded: {_categories.Count()}; poi: {_categories.Select(c => c.Value.Tags.Length).Sum()}"
+            );
+            
+            // read achievements
+            var achievementsFile = File.ReadAllText("achievements.json");
+            _achievements = JsonConvert.DeserializeObject<Achievement[]>(achievementsFile);
+            
+            _logger.LogInformation(
+                $"Achievements loaded: {_achievements.Count()}"
             );
         }
 
@@ -61,6 +70,11 @@ namespace Promenade.Services
 
             if (catId >= 0 && string.IsNullOrEmpty(poi.Description))
                 poi.Description = tagName;
+        }
+
+        public Achievement[] GetAllAchievements()
+        {
+            return _achievements;
         }
 
         private (int categoryId, int subcategoryId) GetCategoryId(Poi poi, out string tagName)

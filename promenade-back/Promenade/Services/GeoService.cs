@@ -43,10 +43,6 @@ namespace Promenade.Services
                 };
                 _dbService.UpdateAsync(user);
             }
-            else
-            {
-                
-            }
 
             return user;
         }
@@ -63,7 +59,8 @@ namespace Promenade.Services
                     IsNearPoi = false,
                     Poi = null,
                     Route = null,
-                    Visited = user.GetVisitedAsPoi()
+                    Visited = user.GetVisitedAsPoi(),
+                    Achievements = CalculateAchievements(user.PoiSaved.Values.ToList())
                 };
                 
                 SaveState(state);
@@ -221,7 +218,11 @@ namespace Promenade.Services
             {
                 // update user data
                 state.User.VisitPoi(state.Poi, state.IsNearPoi);
-                if (state.IsNearPoi) state.Visited = state.User.GetVisitedAsPoi();
+                if (state.IsNearPoi)
+                {
+                    state.Visited = state.User.GetVisitedAsPoi();
+                    state.Achievements = CalculateAchievements(state.User.PoiSaved.Values.ToList());
+                }
 
                 // update db
                 _dbService.Update(state.User);
@@ -302,6 +303,23 @@ namespace Promenade.Services
         private void SaveState(State state)
         {
             _memoryCache.Set(state.User.Id, state, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
+        }
+
+        private AchievementProgress[] CalculateAchievements(List<SavedPoi> poiSaved)
+        {
+            var achievements = _contentService.GetAllAchievements();
+            var progress = new List<AchievementProgress>();
+            
+            foreach (var a in achievements)
+            {
+                var p = new AchievementProgress(a);
+                var done = poiSaved.Count(pSaved => pSaved.Visited && pSaved.CategoryId == a.CategoryId);
+                p.Done = done;
+                
+                progress.Add(p);
+            }
+
+            return progress.ToArray();
         }
     }
 }
