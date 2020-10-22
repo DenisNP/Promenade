@@ -4,13 +4,32 @@
 <!--        <div class="main-title">Promenade</div>-->
         <MapControls/>
         <f7-sheet class="my-sheet" swipe-to-close :backdrop="false"
-         :opened="!!$store.state.currentPoiInfo" @sheet:closed="closeSheet">
+         :opened="Boolean($store.state.currentPoiInfo
+            || $store.state.currentWikiPointInfo)" @sheet:closed="closeSheet">
             <div class="title-block">
                 Информация
                 <i class="close-icon fas fa-times icon" @click="closeSheet"/>
             </div>
             <f7-page-content>
-                <f7-list v-if="!!$store.state.currentPoiInfo" media-list>
+                <f7-swiper v-if="$store.state.currentWikiPointInfo
+                && $store.state.currentWikiPointInfo.imageUrls.length">
+                    <f7-swiper-slide
+                        v-for="(url, index) in $store.state.currentWikiPointInfo.imageUrls"
+                        :key="index"
+                        :style="{
+                            backgroundImage:`url(${url})`,
+                            height: '200px',
+                            backgroundPosiion: 'center',
+                            backgroundSize: 'contain',
+                            backgroundRepeat: 'no-repeat',
+                            }"
+                        >
+
+                    </f7-swiper-slide>
+                </f7-swiper>
+                <pre>{{$store.state.currentWikiPointInfo}}</pre>
+                <f7-list v-if="$store.state.currentPoiInfo
+                                || $store.state.currentWikiPointInfo" media-list>
                     <f7-list-item
                         v-for="tag in tags"
                         :key="tag.key"
@@ -54,6 +73,7 @@ export default {
         poiMarker: null,
         myMarker: null,
         visitedMarkers: [],
+        wikiPointMarkers: [],
         bigIcons: false,
         interval: 0,
         clickedOnce: false,
@@ -73,6 +93,7 @@ export default {
             poi: 'poi',
             route: 'route',
             range: 'range',
+            wikiPoints: 'wikiPoints',
         }),
         showIsochrone() {
             return this.$store.getters.showIsochrone;
@@ -151,6 +172,11 @@ export default {
         bigIcons(b) {
             if (b) this.$$('.visited-poi').removeClass('vp-small');
             else this.$$('.visited-poi').addClass('vp-small');
+            if (b) this.$$('.wiki-point').removeClass('vp-small');
+            else this.$$('.wiki-point').addClass('vp-small');
+        },
+        wikiPoints() {
+            this.getWikiPoints();
         },
     },
     methods: {
@@ -282,13 +308,36 @@ export default {
                     </div>`;
 
                 node.addEventListener('touchend', () => {
-                    this.$store.commit('setCurrentPoiInfo', p);
+                    this.$store.dispatch('getCurrentPoiInfo', p);
                 });
 
                 const m = new mapboxgl.Marker(node);
                 m.setLngLat([p.coordinates.lng, p.coordinates.lat]).addTo(this.map);
 
                 this.visitedMarkers.push(m);
+            });
+        },
+        getWikiPoints() {
+            if (!this.map || !this.mapLoaded) return;
+            this.wikiPointMarkers.forEach((w) => w.remove());
+            this.wikiPointMarkers = [];
+
+            this.wikiPoints.forEach((wp) => {
+                const node = document.createElement('div');
+                node.className = 'wiki-point-container';
+                node.innerHTML = `
+                    <div class="wiki-point${this.bigIcons ? '' : ' vp-small'}">
+                        <i class="fas fa-flag icon"></i>
+                    </div>`;
+
+                node.addEventListener('touchend', () => {
+                    this.$store.dispatch('getWikiPointInfo', wp.id);
+                });
+
+                const m = new mapboxgl.Marker(node);
+                m.setLngLat([wp.coordinates.lng, wp.coordinates.lat]).addTo(this.map);
+
+                this.wikiPointMarkers.push(m);
             });
         },
         flyToMe(forceFly) {
@@ -334,6 +383,7 @@ export default {
             this.getPoi();
             this.getMyPosition();
             this.getVisited();
+            this.getWikiPoints();
             clearInterval(this.interval);
             this.interval = setInterval(this.checkIfMove, 5000);
         },
@@ -342,6 +392,12 @@ export default {
             //     window.history.pushState('sheet', null, '/sheet');
             // }
             this.$store.commit('setCurrentPoiInfo', this.poi);
+        },
+        openWikiSheet() {
+            if (!this.$store.state.currentWikiPointInfo) {
+                window.history.pushState('sheet', null);
+            }
+            this.$store.commit('setCurrentWikiPointInfo', this.wikiPoint);
         },
         closeSheet() {
             // window.history.back();
@@ -559,4 +615,11 @@ export default {
 .my-sheet {
     border-radius: 20px 20px 0 0;
 }
+
+.wiki-point {
+    opacity: 0.5;
+    font-size: 20px;
+    color: var(--f7-theme-color);
+}
+
 </style>

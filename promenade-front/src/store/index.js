@@ -21,6 +21,7 @@ export default new Vuex.Store({
         achievements: [],
         isNearPoi: false,
         currentPoiInfo: null,
+        currentWikiPointInfo: null,
         range: 15,
         settingsTab: 1,
         isLoading: false,
@@ -29,6 +30,7 @@ export default new Vuex.Store({
         geoDisabled: false,
         geoDenied: false,
         networkDisabled: false,
+        wikiPoints: [],
     },
     getters: {
         hasCoordinates(state) {
@@ -203,6 +205,15 @@ export default new Vuex.Store({
         saveOnboarding({ commit }) {
             commit('setShowOnboarding', false);
             VKC.send('VKWebAppStorageSet', { key: 'onboarded', value: '1' });
+        },
+        async getWikiPointInfo({ commit, dispatch }, id) {
+            const result = await dispatch('api', {
+                method: 'wiki',
+                data: {
+                    id,
+                },
+            });
+            commit('setCurrentWikiPointInfo', result);
         },
     },
 });
