@@ -5,7 +5,7 @@
                 <img src="@/assets/run-person.svg">
             </div>
             <div class="SubButtonLeft"
-                @click="$f7router.navigate('/settings')">
+                @click="openSettings">
                 <img src="@/assets/settings.svg">
             </div>
             <RoundSelector/>
@@ -114,15 +114,46 @@ export default {
         },
         async finish() {
             const wasNear = this.$store.state.isNearPoi;
+            const oldDoneList = [...this.$store.state.achievements
+                .filter((a) => a.done >= a.count)];
             await this.stop();
             if (wasNear) {
-                const toast = this.$f7.toast.create({
-                    text: 'Точка была сохранена, как посещённая.',
-                    position: 'center',
-                    cssClass: 'my-text-center',
-                    closeTimeout: 2000,
+                this.$nextTick(() => {
+                    const newDoneList = [...this.$store.state.achievements
+                        .filter((a) => a.done >= a.count)];
+                    const newDone = newDoneList
+                        .find((a) => !oldDoneList.some((oa) => oa.name === a.name));
+
+                    if (newDone) {
+                        const self = this;
+                        const toast = this.$f7.toast.create({
+                            text: `<div class="achievement-toast">
+                            <i class="fas fa-${newDone.icon} icon"></i>
+                            <span>Получено новое достижение: <b>${newDone.name}</b></span>
+                        </div>`,
+                            position: 'bottom',
+                            closeTimeout: 4000,
+                            closeButton: true,
+                            closeButtonColor: 'blue',
+                            closeButtonText: 'Достижения',
+                            on: {
+                                closeButtonClick() {
+                                    self.$store.commit('setSettingsTab', 2);
+                                    self.openSettings();
+                                },
+                            },
+                        });
+                        toast.open();
+                    } else {
+                        const toast = this.$f7.toast.create({
+                            text: 'Точка была сохранена, как посещённая.',
+                            position: 'bottom',
+                            cssClass: 'my-text-center',
+                            closeTimeout: 2000,
+                        });
+                        toast.open();
+                    }
                 });
-                toast.open();
             }
         },
         goToStories() {
@@ -132,6 +163,10 @@ export default {
             const p = loadingPhrases.shift();
             this.phrase = p;
             loadingPhrases.push(p);
+        },
+        openSettings() {
+            // if (this.$store.state.currentPoiInfo) window.history.back();
+            this.$f7.views.main.router.navigate('/settings');
         },
     },
 };
@@ -201,5 +236,15 @@ export default {
     font-size: 11px;
     width: 85px;
     max-width: 85px;
+}
+
+.achievement-toast {
+    display: flex;
+    align-items: center;
+}
+
+.achievement-toast > .icon {
+    margin-right: 15px;
+    font-size: 20px;
 }
 </style>

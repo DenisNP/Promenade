@@ -34,8 +34,6 @@ import MapView from './components/view/MapView.vue';
 import SettingsView from './components/view/SettingsView.vue';
 
 export default {
-    components: {
-    },
     data() {
         return {
             f7params: {

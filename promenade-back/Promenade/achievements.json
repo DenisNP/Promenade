@@ -24,13 +24,13 @@
 		"icon": "igloo"
 	},
 	{
-		"name": "Инженер",
+		"name": "Зодчий",
 		"categoryId": 2,
 		"count": 5,
 		"icon": "broadcast-tower"
 	},
 	{
-		"name": "Зодчий",
+		"name": "Маг",
 		"categoryId": 2,
 		"count": 20,
 		"icon": "gopuram"
@@ -129,13 +129,13 @@
 		"name": "Юный натуралист",
 		"categoryId": 8,
 		"count": 1,
-		"icon": "pagelines"
+		"icon": "seedling"
 	},
 	{
 		"name": "Лесник",
 		"categoryId": 8,
 		"count": 5,
-		"icon": "canadian-maple-leaf"
+		"icon": "leaf"
 	},
 	{
 		"name": "Первопроходец",
