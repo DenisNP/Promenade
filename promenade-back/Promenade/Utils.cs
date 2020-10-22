@@ -48,6 +48,7 @@ namespace Promenade
             }
             var formContent = new FormUrlEncodedContent(kvList);
             using var client = new HttpClient();
+            client.Timeout = TimeSpan.FromMinutes(1);
             client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
             var response = client.PostAsync(url, formContent).Result;
             var bytes = response.Content.ReadAsByteArrayAsync().Result;
@@ -60,6 +61,7 @@ namespace Promenade
         public static string PostRequest(string url, string data, ILogger logger = null)
         {
             using var client = new HttpClient();
+            client.Timeout = TimeSpan.FromMinutes(1);
             client.DefaultRequestHeaders.Add("Accept-Language", "ru-RU");
             var response = client.PostAsync(url, new StringContent(data)).Result;
             var bytes = response.Content.ReadAsByteArrayAsync().Result;

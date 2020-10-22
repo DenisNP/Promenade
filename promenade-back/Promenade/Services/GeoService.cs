@@ -11,9 +11,9 @@ namespace Promenade.Services
 {
     public class GeoService
     {
-        private const int SavedToRawRatio = 5;
+        private const int SavedToRawRatio = 20;
         private const int CategoryDuplicateRatio = 10;
-        private const int TagDuplicateRatio = 20;
+        private const int TagDuplicateRatio = 5;
         private readonly double[] _rangeDistances = {0.67, 1, 2, 4};
         private const double RadiusToBoundRatio = 1.2;
         private const double FurtherToCloserRatio = 2.0;
@@ -162,7 +162,7 @@ namespace Promenade.Services
             pois = pois.Where(p => !user.PoiSaved.ContainsKey(p.Id) || !user.PoiSaved[p.Id].Visited).ToList();
             
             // store categories and tagsweights
-            var catWeights = ConvertToWeights(lastCategories);
+            // var catWeights = ConvertToWeights(lastCategories);
             var tagWeights = ConvertToWeights(lastTags);
             
             double GetThreshold(Poi p)
@@ -172,12 +172,12 @@ namespace Promenade.Services
                 var coeff = diff > 0 ? FurtherToCloserRatio : 1.0;
                 var rawValue = coeff * Math.Sqrt(Math.Abs(diff));
                 var savedValue = user.SavedPoiScore(p.Id);
-                var categoryDuplicateValue = catWeights.ContainsKey(p.CategoryId) ? catWeights[p.CategoryId] : 0;
+                // var categoryDuplicateValue = catWeights.ContainsKey(p.CategoryId) ? catWeights[p.CategoryId] : 0;
                 var tagDuplicateValue = tagWeights.ContainsKey(p.FullTagId) ? tagWeights[p.FullTagId] : 0;
 
                 return rawValue
                        + SavedToRawRatio * savedValue
-                       + CategoryDuplicateRatio * categoryDuplicateValue
+                       // + CategoryDuplicateRatio * categoryDuplicateValue
                        + TagDuplicateRatio * tagDuplicateValue;
             }
 

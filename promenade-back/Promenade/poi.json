@@ -220,11 +220,6 @@
       },
       {
         "key": "historic",
-        "value": "memorial",
-        "name": "мемориал"
-      },
-      {
-        "key": "historic",
         "value": "battlefield",
         "name": "место сражения"
       },
@@ -441,6 +436,11 @@
         "key": "memorial",
         "value": "statue",
         "name": "памятник"
+      },
+      {
+        "key": "historic",
+        "value": "memorial",
+        "name": "мемориал"
       }
     ],
     "defaultEnabled": false
