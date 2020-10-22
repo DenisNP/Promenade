@@ -53,6 +53,7 @@ export default {
         firstCoordsSet: false,
         poiMarker: null,
         myMarker: null,
+        distMarker: null,
         visitedMarkers: [],
         bigIcons: false,
         interval: 0,
@@ -109,9 +110,9 @@ export default {
                 }));
 
             tags.unshift({ key: 'Координаты', value: `${poi.coordinates.lat}, ${poi.coordinates.lng}`, isCoords: true });
-            tags.unshift({ key: 'Категория', value: category.name });
+            tags.unshift({ key: 'Категория', value: firstUpperCase(category.name) });
             if (!tags.some((t) => t.value.toLowerCase() === poi.description.toLowerCase())) {
-                tags.unshift({ key: 'Название', value: poi.description });
+                tags.unshift({ key: 'Название', value: firstUpperCase(poi.description) });
             }
 
             const unknownTagValues = tags.filter((t) => !t.key).map((t) => t.value);
@@ -185,6 +186,7 @@ export default {
                 this.map.removeLayer('route');
                 this.map.removeSource('route');
             }
+            if (this.distMarker) this.distMarker.remove();
             if (
                 !this.mapLoaded
                 || this.route == null
@@ -223,6 +225,20 @@ export default {
                     'line-dasharray': [0, 2],
                 },
             });
+
+            if (this.route.points.length === 0) return;
+            const midpoint = this.route.points[Math.floor(this.route.points.length / 2)];
+            const distancePosition = new mapboxgl.LngLat(midpoint.lng, midpoint.lat);
+            const node = document.createElement('div');
+            node.className = 'distance-marker';
+            if (this.route.distance >= 1000) {
+                node.innerHTML = `<span>${Math.round(this.route.distance / 100) / 10} км</span>`;
+            } else {
+                node.innerHTML = `<span>${Math.round(this.route.distance)} м</span>`;
+            }
+
+            this.distMarker = new mapboxgl.Marker(node);
+            this.distMarker.setLngLat(distancePosition).addTo(this.map);
         },
         getPoi() {
             if (this.poiMarker != null) this.poiMarker.remove();
@@ -558,5 +574,15 @@ export default {
 
 .my-sheet {
     border-radius: 20px 20px 0 0;
+}
+
+.distance-marker > span {
+    display: block;
+    transform: translateX(calc(50% + 10px));
+    color: #4BB34B;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: left;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
 }
 </style>
