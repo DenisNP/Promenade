@@ -18,9 +18,11 @@ export default new Vuex.Store({
             lng: 0.0,
         },
         visited: [],
+        achievements: [],
         isNearPoi: false,
         currentPoiInfo: null,
         range: 15,
+        settingsTab: 1,
         isLoading: false,
         userName: 'Я',
         showOnboarding: false,
@@ -48,6 +50,7 @@ export default new Vuex.Store({
             state.coordinates = result.coordinates;
             state.isNearPoi = result.isNearPoi;
             state.visited = result.visited;
+            state.achievements = result.achievements;
         },
         setCoordinates(state, coordinates) {
             state.coordinates = coordinates;
@@ -75,6 +78,9 @@ export default new Vuex.Store({
         },
         setCurrentPoiInfo(state, pInfo) {
             state.currentPoiInfo = pInfo;
+        },
+        setSettingsTab(state, st) {
+            state.settingsTab = st;
         },
     },
     actions: {
