@@ -7,7 +7,7 @@
          :opened="!!$store.state.currentPoiInfo" @sheet:closed="closeSheet">
             <div class="title-block">
                 Информация
-                <font-awesome-icon class="close-icon" icon="times" @click="closeSheet"/>
+                <i class="close-icon fas fa-times icon" @click="closeSheet"/>
             </div>
             <f7-page-content>
                 <f7-list v-if="!!$store.state.currentPoiInfo" media-list>
@@ -18,8 +18,8 @@
                         target="_blank"
                         external
                     >
-                    <div slot="header" class="custom-list-item-header">{{tag.key}}</div>
-                    <div slot="text" class="custom-list-item-text">{{tag.value}}</div>
+                        <div slot="header" class="custom-list-item-header">{{tag.key}}</div>
+                        <div slot="text" class="custom-list-item-text">{{tag.value}}</div>
                     </f7-list-item>
                 </f7-list>
                 <div class="empty-block"/>
@@ -337,13 +337,14 @@ export default {
             this.interval = setInterval(this.checkIfMove, 5000);
         },
         openSheet() {
-            if (!this.$store.state.currentPoiInfo) {
-                window.history.pushState('sheet', null);
-            }
+            // if (!this.$store.state.currentPoiInfo) {
+            //     window.history.pushState('sheet', null, '/sheet');
+            // }
             this.$store.commit('setCurrentPoiInfo', this.poi);
         },
         closeSheet() {
-            window.history.back();
+            // window.history.back();
+            this.$store.commit('setCurrentPoiInfo', null);
         },
         filterTags(tag) {
             const cyrillicPattern = /[а-яА-ЯЁё]/;
@@ -470,7 +471,7 @@ export default {
 }
 
 .my-position-container {
-    /*z-index: 2;*/
+    z-index: 2;
 }
 
 .my-position {
@@ -523,7 +524,7 @@ export default {
 
 .close-icon {
     opacity: 0.15;
-    position: absolute;
+    position: absolute!important;
     right: 14px;
     font-size: 22px;
 }
