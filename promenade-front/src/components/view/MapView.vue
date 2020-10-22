@@ -17,6 +17,7 @@
                         :link="constructTagLink(tag)"
                         target="_blank"
                         external
+                        chevron-center
                     >
                         <div slot="header" class="custom-list-item-header">{{tag.key}}</div>
                         <div slot="text" class="custom-list-item-text">{{tag.value}}</div>
