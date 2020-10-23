@@ -1,6 +1,6 @@
 <template>
         <f7-page>
-            <f7-navbar title="Категории" back-link="" @click="close"/>
+            <f7-navbar title="Опции" back-link="" @click="close"/>
             <f7-toolbar tabbar position="top">
                 <f7-link :tab-link-active="tab === 1" @click="setTab(1)">Категории</f7-link>
                 <f7-link :tab-link-active="tab === 2" @click="setTab(2)">Достижения</f7-link>
