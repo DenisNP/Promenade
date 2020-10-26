@@ -302,7 +302,7 @@ namespace Promenade.Services
 
         private void SaveState(State state)
         {
-            _memoryCache.Set(state.User.Id, state, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(30) });
+            _memoryCache.Set(state.User.Id, state, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(2) });
         }
 
         private AchievementProgress[] CalculateAchievements(List<SavedPoi> poiSaved)
