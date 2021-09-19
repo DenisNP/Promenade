@@ -130,7 +130,6 @@ namespace Promenade.Services
             }
             
             // get points
-            var pois = new List<Poi>();
             const double distanceStepInKm = 5.0;
             double horizontalDistance = GeoUtils.Distance(topLeft, new GeoPoint(topLeft.Lat, bottomRight.Lng));
             double verticalDistance = GeoUtils.Distance(topLeft, new GeoPoint(bottomRight.Lat, topLeft.Lng));
@@ -149,34 +148,34 @@ namespace Promenade.Services
                     GeoPoint currentLeft = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI / 2, distanceStepInKm * h);
                     GeoPoint currentTop = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI, distanceStepInKm * v);
                     var currentTopLeft = new GeoPoint(currentTop.Lat, currentLeft.Lng);
-                    Console.WriteLine("Current TL: {0}, {1}", currentLeft.Lat, currentTopLeft.Lng);
+                    Console.WriteLine("Current TL: {0}, {1}", currentTopLeft.Lat, currentTopLeft.Lng);
 
                     GeoPoint currentBottomRight = GeoUtils.FindPointAtDistanceFrom(currentTopLeft, 3 * Math.PI / 4,
                         distanceStepInKm * Math.Sqrt(2));
                     
                     List<Poi> currentPois = overpass.Execute(currentTopLeft, currentBottomRight);
                     Console.WriteLine("points loaded: {0}", currentPois.Count);
-                    Console.WriteLine();
-                    pois.AddRange(currentPois);
+                    
+                    var fileName = $"places_{h}_{v}.json";
+                    List<PlaceData> places = currentPois.Select(p =>
+                    {
+                        _contentService.FillEmptyData(p);
+                        return new PlaceData
+                        {
+                            Id = p.Id,
+                            Name = p.Description,
+                            Description = "",
+                            Images = Array.Empty<string>(),
+                            Location = p.Coordinates
+                        };
+                    }).ToList();
+                    
+                    File.WriteAllText(fileName, JsonConvert.SerializeObject(places, Formatting.Indented));
+                    Console.WriteLine(fileName + " written\n");
                 }
             }
             
-            // transform
-            List<PlaceData> places = pois.Select(p =>
-            {
-                _contentService.FillEmptyData(p);
-                return new PlaceData
-                {
-                    Id = p.Id,
-                    Name = p.Description,
-                    Description = "",
-                    Images = Array.Empty<string>(),
-                    Location = p.Coordinates
-                };
-            }).ToList();
-            
-            File.WriteAllText("places_data.json", JsonConvert.SerializeObject(places, Formatting.Indented));
-            Console.WriteLine($"Places written: {places.Count}");
+            Console.WriteLine("All done");
         }
         
         private class PlaceData
