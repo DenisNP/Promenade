@@ -146,17 +146,18 @@ namespace Promenade.Services
             if (!Directory.Exists(directory)) 
                 Directory.CreateDirectory(directory);
             
-            //var files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory);
-            //Console.WriteLine(files.Length);
-            const int startH = 0;
-            const int startV = 16;
-            
-            for (int h = startH; h < horizontalSteps; h++)
+            for (var h = 0; h < horizontalSteps; h++)
             {
-                int v = h == startH ? startV : 0;
+                var v = 0;
                 var errors = 0;
                 while (v < verticalSteps)
                 {
+                    if (File.Exists(directory + $"places_{h}_{v}.json"))
+                    {
+                        v++;
+                        continue;
+                    }
+                    
                     GeoPoint currentLeft = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI / 2, distanceStepInKm * h);
                     GeoPoint currentTop = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI, distanceStepInKm * v);
                     var currentTopLeft = new GeoPoint(currentTop.Lat, currentLeft.Lng);
@@ -169,7 +170,7 @@ namespace Promenade.Services
                     if (currentPois == null)
                     {
                         errors++;
-                        Console.WriteLine("{0}_{1} error, waiting...", h, v);
+                        Console.WriteLine("{0}_{1} error, waiting...\n", h, v);
                         Thread.Sleep(10000 * errors);
                         continue;
                     }

@@ -117,9 +117,9 @@ namespace Promenade.Geo
 
                 return pois;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+                // Console.WriteLine(e);
                 return null;
             }
         }
