@@ -95,5 +95,10 @@ namespace Promenade.Services
             tagName = "";
             return (-1, -1);
         }
+
+        public Category GetCategory(int categoryId)
+        {
+            return _categories[categoryId];
+        }
     }
 }

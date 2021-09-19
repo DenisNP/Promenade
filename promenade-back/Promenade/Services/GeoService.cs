@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Promenade.Geo;
@@ -139,6 +140,7 @@ namespace Promenade.Services
             Console.WriteLine("Horizontal distance: {0}; steps: {1}", horizontalDistance, horizontalSteps);
             Console.WriteLine("Vertical distance: {0}; steps: {1}", verticalDistance, verticalSteps);
             Console.WriteLine();
+            var r = new Random();
             
             // go
             for (var h = 0; h < horizontalSteps; h++)
@@ -164,14 +166,17 @@ namespace Promenade.Services
                         {
                             Id = p.Id,
                             Name = p.Description,
-                            Description = "",
+                            Category = _contentService.GetCategory(p.CategoryId).Name,
                             Images = Array.Empty<string>(),
-                            Location = p.Coordinates
+                            Location = p.Coordinates,
+                            Tags = p.Tags
                         };
                     }).ToList();
                     
                     File.WriteAllText(fileName, JsonConvert.SerializeObject(places, Formatting.Indented));
                     Console.WriteLine(fileName + " written\n");
+                    
+                    Thread.Sleep(r.Next(10000, 30000));
                 }
             }
             
@@ -182,8 +187,9 @@ namespace Promenade.Services
         {
             public string Id { get; set; } = "";
             public string Name { get; set; } = "";
-            public string Description { get; set; } = "";
+            public string Category { get; set; } = "";
             public string[] Images { get; set; } = Array.Empty<string>();
+            public KeyValuePair<string, string>[] Tags { get; set; }
             public GeoPoint Location { get; set; }
         }
 
