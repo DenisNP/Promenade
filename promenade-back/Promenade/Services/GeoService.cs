@@ -140,12 +140,22 @@ namespace Promenade.Services
             Console.WriteLine("Horizontal distance: {0}; steps: {1}", horizontalDistance, horizontalSteps);
             Console.WriteLine("Vertical distance: {0}; steps: {1}", verticalDistance, verticalSteps);
             Console.WriteLine();
-            var r = new Random();
             
             // go
-            for (var h = 0; h < horizontalSteps; h++)
+            string directory = AppDomain.CurrentDomain.BaseDirectory + @"\places\";
+            if (!Directory.Exists(directory)) 
+                Directory.CreateDirectory(directory);
+            
+            //var files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory);
+            //Console.WriteLine(files.Length);
+            const int startH = 0;
+            const int startV = 16;
+            
+            for (int h = startH; h < horizontalSteps; h++)
             {
-                for (var v = 0; v < verticalSteps; v++)
+                int v = h == startH ? startV : 0;
+                var errors = 0;
+                while (v < verticalSteps)
                 {
                     GeoPoint currentLeft = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI / 2, distanceStepInKm * h);
                     GeoPoint currentTop = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI, distanceStepInKm * v);
@@ -156,6 +166,15 @@ namespace Promenade.Services
                         distanceStepInKm * Math.Sqrt(2));
                     
                     List<Poi> currentPois = overpass.Execute(currentTopLeft, currentBottomRight);
+                    if (currentPois == null)
+                    {
+                        errors++;
+                        Console.WriteLine("{0}_{1} error, waiting...", h, v);
+                        Thread.Sleep(10000 * errors);
+                        continue;
+                    }
+
+                    errors = 0;
                     Console.WriteLine("points loaded: {0}", currentPois.Count);
                     
                     var fileName = $"places_{h}_{v}.json";
@@ -173,10 +192,10 @@ namespace Promenade.Services
                         };
                     }).ToList();
                     
-                    File.WriteAllText(fileName, JsonConvert.SerializeObject(places, Formatting.Indented));
+                    File.WriteAllText(directory + fileName, JsonConvert.SerializeObject(places, Formatting.Indented));
                     Console.WriteLine(fileName + " written\n");
-                    
-                    Thread.Sleep(r.Next(10000, 30000));
+
+                    v++;
                 }
             }
             

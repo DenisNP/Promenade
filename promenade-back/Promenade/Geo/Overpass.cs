@@ -119,8 +119,8 @@ namespace Promenade.Geo
             }
             catch (Exception e)
             {
-                Console.WriteLine(response);
-                return new List<Poi>();
+                Console.WriteLine(e);
+                return null;
             }
         }
 
