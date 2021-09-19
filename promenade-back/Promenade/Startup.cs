@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Promenade.Geo;
+using Promenade.Geo.Models;
 using Promenade.Models;
 using Promenade.Services;
 using Promenade.Services.Abstract;
@@ -23,7 +28,7 @@ namespace Promenade
             services.AddSingleton<ISocialService, VkService>();
         }
 
-        public void Configure(IApplicationBuilder app, IDbService dbService, ContentService contentService)
+        public void Configure(IApplicationBuilder app, IDbService dbService, ContentService contentService, GeoService geoService)
         {
             app.UseRouting();
             app.UseFileServer();
@@ -37,6 +42,8 @@ namespace Promenade
             });
             
             contentService.Init();
+
+            geoService.WriteAllPois(new GeoPoint(60.929294, 28.652580), new GeoPoint(59.126552, 32.354972));
         }
     }
 }

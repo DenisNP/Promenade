@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Promenade.Geo;
@@ -115,6 +116,30 @@ namespace Promenade.Services
             SetIsNear(state);
             SaveState(state);
             return state;
+        }
+
+        public void WriteAllPois(GeoPoint topLeftBound, GeoPoint bottomRightBound)
+        {
+            // create overpass object and add clauses
+            Overpass overpass = new Overpass().SetTimeout(300);
+            KeyValuePair<string, string>[] tags = _contentService.GetTagsForCategories(_contentService.GetAllIds());
+            foreach (KeyValuePair<string, string> tag in tags)
+            {
+                overpass = overpass.AddClause(Overpass.AllTypes, tag);
+            }
+            
+            // get points
+            List<Poi> pois = overpass.Execute(topLeftBound, bottomRightBound);
+            pois.ForEach(p => _contentService.FillEmptyData(p));
+
+            
+            
+            File.WriteAllText("all_pois.json");
+        }
+        
+        private class Place
+        {
+            
         }
 
         private List<Poi> QueryPois(int rangeId, State state)

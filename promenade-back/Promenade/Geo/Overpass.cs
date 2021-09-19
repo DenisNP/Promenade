@@ -15,7 +15,7 @@ namespace Promenade.Geo
         private readonly string[] _nameTagsPriority = {"name", "name:ru", "title", "description", "subject" };
 
         private string _url;
-        private readonly int _timeout;
+        private int _timeout;
 
         private List<QueryClause> _query = new List<QueryClause>();
         private GeoPoint _boundsTopLeft;
@@ -25,6 +25,12 @@ namespace Promenade.Geo
         {
             _url = url;
             _timeout = timeout;
+        }
+
+        public Overpass SetTimeout(int t)
+        {
+            _timeout = t;
+            return this;
         }
 
         public Overpass AddClause(ElementType elementType, params KeyValuePair<string, string>[] tags)
