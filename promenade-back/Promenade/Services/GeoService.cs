@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Promenade.Geo;
 using Promenade.Geo.Models;
 using Promenade.Models;
@@ -118,7 +119,7 @@ namespace Promenade.Services
             return state;
         }
 
-        public void WriteAllPois(GeoPoint topLeftBound, GeoPoint bottomRightBound)
+        public void WriteAllPois(GeoPoint topLeft, GeoPoint bottomRight)
         {
             // create overpass object and add clauses
             Overpass overpass = new Overpass().SetTimeout(300);
@@ -129,17 +130,62 @@ namespace Promenade.Services
             }
             
             // get points
-            List<Poi> pois = overpass.Execute(topLeftBound, bottomRightBound);
-            pois.ForEach(p => _contentService.FillEmptyData(p));
+            var pois = new List<Poi>();
+            const double distanceStepInKm = 5.0;
+            double horizontalDistance = GeoUtils.Distance(topLeft, new GeoPoint(topLeft.Lat, bottomRight.Lng));
+            double verticalDistance = GeoUtils.Distance(topLeft, new GeoPoint(bottomRight.Lat, topLeft.Lng));
+            var horizontalSteps = (int)Math.Ceiling(horizontalDistance / distanceStepInKm);
+            var verticalSteps = (int)Math.Ceiling(verticalDistance / distanceStepInKm);
+            
+            Console.WriteLine("Horizontal distance: {0}; steps: {1}", horizontalDistance, horizontalSteps);
+            Console.WriteLine("Vertical distance: {0}; steps: {1}", verticalDistance, verticalSteps);
+            Console.WriteLine();
+            
+            // go
+            for (var h = 0; h < horizontalSteps; h++)
+            {
+                for (var v = 0; v < verticalSteps; v++)
+                {
+                    GeoPoint currentLeft = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI / 2, distanceStepInKm * h);
+                    GeoPoint currentTop = GeoUtils.FindPointAtDistanceFrom(topLeft, Math.PI, distanceStepInKm * v);
+                    var currentTopLeft = new GeoPoint(currentTop.Lat, currentLeft.Lng);
+                    Console.WriteLine("Current TL: {0}, {1}", currentLeft.Lat, currentTopLeft.Lng);
 
+                    GeoPoint currentBottomRight = GeoUtils.FindPointAtDistanceFrom(currentTopLeft, 3 * Math.PI / 4,
+                        distanceStepInKm * Math.Sqrt(2));
+                    
+                    List<Poi> currentPois = overpass.Execute(currentTopLeft, currentBottomRight);
+                    Console.WriteLine("points loaded: {0}", currentPois.Count);
+                    Console.WriteLine();
+                    pois.AddRange(currentPois);
+                }
+            }
             
+            // transform
+            List<PlaceData> places = pois.Select(p =>
+            {
+                _contentService.FillEmptyData(p);
+                return new PlaceData
+                {
+                    Id = p.Id,
+                    Name = p.Description,
+                    Description = "",
+                    Images = Array.Empty<string>(),
+                    Location = p.Coordinates
+                };
+            }).ToList();
             
-            File.WriteAllText("all_pois.json");
+            File.WriteAllText("places_data.json", JsonConvert.SerializeObject(places, Formatting.Indented));
+            Console.WriteLine($"Places written: {places.Count}");
         }
         
-        private class Place
+        private class PlaceData
         {
-            
+            public string Id { get; set; } = "";
+            public string Name { get; set; } = "";
+            public string Description { get; set; } = "";
+            public string[] Images { get; set; } = Array.Empty<string>();
+            public GeoPoint Location { get; set; }
         }
 
         private List<Poi> QueryPois(int rangeId, State state)
