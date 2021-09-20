@@ -142,7 +142,7 @@ namespace Promenade.Services
             Console.WriteLine();
             
             // go
-            string directory = AppDomain.CurrentDomain.BaseDirectory + @"\places\";
+            const string directory = @"D:\places\";
             if (!Directory.Exists(directory)) 
                 Directory.CreateDirectory(directory);
             
