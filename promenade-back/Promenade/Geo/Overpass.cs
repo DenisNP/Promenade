@@ -11,7 +11,7 @@ namespace Promenade.Geo
     {
         public const ElementType AllTypes = ElementType.Node | ElementType.Relation | ElementType.Way;
         private const int DefaultTimeout = 25;
-        private const string DefaultUrl = "http://overpass-api.de/api/interpreter";
+        private const string DefaultUrl = "https://overpass-api.de/api/interpreter";
         private readonly string[] _nameTagsPriority = {"name", "name:ru", "title", "description", "subject" };
 
         private string _url;
@@ -113,6 +113,8 @@ namespace Promenade.Geo
             }
             catch (Exception e)
             {
+                Console.WriteLine(query);
+                Console.WriteLine(response);
                 Console.WriteLine(e);
                 return new List<Poi>();
             }
