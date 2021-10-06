@@ -170,12 +170,13 @@ namespace Promenade.Services
                     if (currentPois == null)
                     {
                         errors++;
-                        Console.WriteLine("{0}_{1} error, waiting...\n", h, v);
-                        Thread.Sleep(10000 * errors);
+                        int w = errors * 10000;
+                        Console.WriteLine("{0}_{1} error, waiting for {2}ms\n", h, v, w);
+                        Thread.Sleep(w);
                         continue;
                     }
 
-                    errors = 0;
+                    if (errors > 0) errors--;
                     Console.WriteLine("points loaded: {0}", currentPois.Count);
                     
                     var fileName = $"places_{h}_{v}.json";
@@ -197,6 +198,13 @@ namespace Promenade.Services
                     Console.WriteLine(fileName + " written\n");
 
                     v++;
+
+                    if (errors > 0)
+                    {
+                        int w = 10000 * errors;
+                        Console.WriteLine("waiting for {0}ms", w);
+                        Thread.Sleep(w);
+                    }
                 }
             }
             
